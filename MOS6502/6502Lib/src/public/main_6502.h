@@ -52,6 +52,11 @@ class CPU {
 	    LDA_IM = 0xA9,
 		LDA_ZP = 0xA5,
 		LDA_ZP_X = 0xB5,
+		LDA_ABS = 0xAD,
+		LDA_ABS_X = 0xBD,
+		LDA_ABS_Y = 0xB9,
+		LDA_IND_X = 0xA1,
+		LDA_IND_Y = 0xB1,
 		JSR = 0x20;
 
 	void Reset(Memory& memory) {
@@ -69,10 +74,24 @@ class CPU {
 		return data;
 	}
 
-    // Read byte from memory at given Address
-	Byte ReadByte(s32& Cycles, Byte Address, Memory& memory) {
+	// Read byte at given any Address
+	Byte ReadByte(s32& Cycles, Word Address, Memory& memory) {
 		Byte data = memory[Address];
 		Cycles--;
+		return data;
+	}
+
+	// Read byte at given any Address
+	Word ReadWord(s32& Cycles, Word Address, Memory& memory) {
+		Word data = memory[Address];
+		data |= (memory[Address+1] << 8);
+		
+		Cycles -= 2;
+
+		// if (PLATFORM_BIG_ENDIAN) {
+	    // swapBytesInWord(data);
+		// }
+
 		return data;
 	}
 
@@ -95,7 +114,6 @@ class CPU {
 	}
 
 	s32 Execute(s32 Cycles, Memory& mem) {
-		// const s32 CyclesRequested = Cycles;
 		const s32 CyclesRequested = Cycles;
 		while (Cycles > 0) {
 			Byte instruction = FetchByte(Cycles, mem);
@@ -124,6 +142,57 @@ class CPU {
 					N = (A & 0b10000000) > 0;
 				} break;
 
+				case LDA_ABS: {
+					Word absolute_address = FetchWord(Cycles, mem);
+					A = ReadByte(Cycles, absolute_address, mem);
+					Z = A == 0;
+					N = (A & 0b10000000) > 0;
+				} break;
+
+				case LDA_ABS_X: {
+					Word absolute_address = FetchWord(Cycles, mem);
+					Word absolute_address_x = absolute_address + X;
+					if (((absolute_address & 0xFF) + X) > 0xFF) {
+						Cycles--;
+					};
+					A = ReadByte(Cycles, absolute_address_x, mem);
+					Z = A == 0;
+					N = (A & 0b10000000) > 0;
+				} break;
+
+				case LDA_ABS_Y: {
+					Word absolute_address = FetchWord(Cycles, mem);
+					Word absolute_address_y = absolute_address + Y;
+					if (((absolute_address & 0xFF) + Y) > 0xFF) {
+						Cycles--;
+					};
+					A = ReadByte(Cycles, absolute_address_y, mem);
+					Z = A == 0;
+					N = (A & 0b10000000) > 0;
+				} break;
+
+				case LDA_IND_X: {
+					Byte zero_page_address = FetchByte(Cycles, mem);
+					Byte zero_page_address_x = zero_page_address + X;
+					Cycles--;
+					Word address = ReadWord(Cycles, zero_page_address_x, mem);
+					A = ReadByte(Cycles, address, mem);
+					Z = A == 0;
+					N = (A & 0b10000000) > 0;
+				} break;
+
+				case LDA_IND_Y: {
+					Byte zero_page_address = FetchByte(Cycles, mem);
+					Word address = ReadWord(Cycles, zero_page_address, mem);
+					Word address_y = address + Y;
+					if (((address_y & 0xFF) + Y) > 0xFF) {
+						Cycles--;
+					};
+					A = ReadByte(Cycles, address_y, mem);
+					Z = A == 0;
+					N = (A & 0b10000000) > 0;
+				} break;
+
 				case JSR: {
 					Word subAddress = FetchWord(Cycles, mem);
 					mem.writeWord(PC - 1, SP, Cycles);
@@ -133,7 +202,7 @@ class CPU {
 				} break;
 
 				default: {
-					printf("Unexpected instruction %d, PC = %x\n", instruction, PC);
+					throw -1;
 				} break;
 			}
 		}
