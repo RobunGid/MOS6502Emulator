@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include <main_6502.h>
+#include <m6502.h>
 
 class MOS6502Test1 : public testing::Test {
 	public:
-		Memory memory;
-		CPU cpu;
+		mos6502::Memory memory;
+		mos6502::CPU cpu;
 		virtual void SetUp() {
 			cpu.Reset(memory);
 		}
@@ -13,7 +13,7 @@ class MOS6502Test1 : public testing::Test {
 		}
 };
 
-static void VerifyUnmodifiedFlagFromLDA(const CPU& cpu, const CPU& cpu_copy) {
+static void VerifyUnmodifiedFlagFromLDA(const mos6502::CPU& cpu, const mos6502::CPU& cpu_copy) {
 	EXPECT_EQ(cpu.C, cpu_copy.C);
 	EXPECT_EQ(cpu.I, cpu_copy.I);
 	EXPECT_EQ(cpu.D, cpu_copy.D);
@@ -22,6 +22,7 @@ static void VerifyUnmodifiedFlagFromLDA(const CPU& cpu, const CPU& cpu_copy) {
 }
 
 TEST_F( MOS6502Test1, TheCPUDoesNothingWhenExecutesZeroCycles ) {
+	using namespace mos6502;
 	
 	// given
 	constexpr s32 NUM_CYCLES = 0;
@@ -35,6 +36,8 @@ TEST_F( MOS6502Test1, TheCPUDoesNothingWhenExecutesZeroCycles ) {
 }
 
 TEST_F( MOS6502Test1, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstructions ) {
+	using namespace mos6502;
+	
 	// given
 	memory[0xFFFC] = CPU::LDA_IM;
 	memory[0xFFFD] = 0x84;
@@ -48,6 +51,8 @@ TEST_F( MOS6502Test1, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstructio
 }
 
 TEST_F( MOS6502Test1, LDAImmeddiateCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	memory[0xFFFC] = CPU::LDA_IM;
 	memory[0xFFFD] = 0x84;
@@ -65,6 +70,8 @@ TEST_F( MOS6502Test1, LDAImmeddiateCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAImmeddiateCanAffectZeroFlag ) {
+	using namespace mos6502;
+	
 	// given
 	cpu.A = 0xff;
 	memory[0xFFFC] = CPU::LDA_IM;
@@ -81,6 +88,8 @@ TEST_F( MOS6502Test1, LDAImmeddiateCanAffectZeroFlag ) {
 }
 
 TEST_F( MOS6502Test1, LDAZeroPageCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	memory[0xFFFC] = CPU::LDA_ZP;
 	memory[0xFFFD] = 0x42;
@@ -99,6 +108,8 @@ TEST_F( MOS6502Test1, LDAZeroPageCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	cpu.X = 0x05;
 	memory[0xFFFC] = CPU::LDA_ZP_X;
@@ -118,6 +129,8 @@ TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWraps ) {
+	using namespace mos6502;
+	
 	// given
 	cpu.X = 0xFF;
 	memory[0xFFFC] = CPU::LDA_ZP_X;
@@ -137,6 +150,8 @@ TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWraps ) {
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+	
 	// given
 	memory[0xFFFC] = CPU::LDA_ABS;
 	memory[0xFFFD] = 0x80;
@@ -157,6 +172,8 @@ TEST_F( MOS6502Test1, LDAAbsoluteCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	cpu.X = 0x01;
 	memory[0xFFFC] = CPU::LDA_ABS_X;
@@ -178,6 +195,8 @@ TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithCrossPageBoundary ) {
+	using namespace mos6502;
+
 	// given
 	cpu.X = 0xFF;
 	memory[0xFFFC] = CPU::LDA_ABS_X;
@@ -199,6 +218,8 @@ TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithCrossPageBoun
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	cpu.Y = 0x01;
 	memory[0xFFFC] = CPU::LDA_ABS_Y;
@@ -220,6 +241,8 @@ TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegisterWithCrossPageBoundary ) {
+	using namespace mos6502;
+
 	// given
 	cpu.Y = 0xFF;
 	memory[0xFFFC] = CPU::LDA_ABS_Y;
@@ -241,6 +264,8 @@ TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegisterWithCrossPageBoun
 }
 
 TEST_F( MOS6502Test1, LDAIndirectXCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	cpu.X = 0x04;
 	memory[0xFFFC] = CPU::LDA_IND_X;
@@ -263,6 +288,8 @@ TEST_F( MOS6502Test1, LDAIndirectXCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+
 	// given
 	cpu.Y = 0x04;
 	memory[0xFFFC] = CPU::LDA_IND_Y;
@@ -285,6 +312,8 @@ TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegister ) {
 }
 
 TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegisterWhenCrossesPageBoundary ) {
+	using namespace mos6502;
+
 	// given
 	cpu.Y = 0xFF;
 	memory[0xFFFC] = CPU::LDA_IND_Y;
