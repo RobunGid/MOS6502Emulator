@@ -11,9 +11,18 @@ class MOS6502Test1 : public testing::Test {
 		virtual void TearDown() {
 
 		}
+		void TestLoadRegisterImmediate(mos6502::Byte opcode, mos6502::Byte mos6502::CPU::*Register);
+		void TestLoadRegisterZeroPage(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*RegisterToTest);
+		void TestLoadRegisterZeroPageX(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
+		void TestLoadRegisterZeroPageY(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
+		void TestLoadRegisterAbsolute(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
+		void TestLoadRegisterAbsoluteX(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
+		void TestLoadRegisterAbsoluteY(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
+		void TestLoadRegisterAbsoluteXWithPageCrossing(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
+		void TestLoadRegisterAbsoluteYWithPageCrossing(mos6502::Byte opcodeToTest, mos6502::Byte mos6502::CPU::*registerToTest);
 };
 
-static void VerifyUnmodifiedFlagFromLDA(const mos6502::CPU& cpu, const mos6502::CPU& cpu_copy) {
+static void VerifyUnmodifiedFlagFromLoadRegister(const mos6502::CPU& cpu, const mos6502::CPU& cpu_copy) {
 	EXPECT_EQ(cpu.C, cpu_copy.C);
 	EXPECT_EQ(cpu.I, cpu_copy.I);
 	EXPECT_EQ(cpu.D, cpu_copy.D);
@@ -32,7 +41,6 @@ TEST_F( MOS6502Test1, TheCPUDoesNothingWhenExecutesZeroCycles ) {
 
 	// then
 	EXPECT_EQ(CyclesUsed, 0);
-
 }
 
 TEST_F( MOS6502Test1, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstructions ) {
@@ -50,11 +58,14 @@ TEST_F( MOS6502Test1, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstructio
 	EXPECT_EQ(CyclesUsed, 2);
 }
 
-TEST_F( MOS6502Test1, LDAImmeddiateCanLoadAValueIntoTheARegister ) {
+void MOS6502Test1::TestLoadRegisterImmediate(
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*RegisterToTest
+) {
 	using namespace mos6502;
 
 	// given
-	memory[0xFFFC] = CPU::LDA_IM;
+	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x84;
 	CPU cpu_copy = cpu;
 
@@ -62,12 +73,225 @@ TEST_F( MOS6502Test1, LDAImmeddiateCanLoadAValueIntoTheARegister ) {
 	s32 CyclesUsed = cpu.Execute(2, memory);
 
 	// then
-	EXPECT_EQ(cpu.A, 0x84);
+	EXPECT_EQ(cpu.*RegisterToTest, 0x84);
 	EXPECT_EQ(CyclesUsed, 2);
 	EXPECT_FALSE(cpu.Z);
 	EXPECT_TRUE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
+
+void MOS6502Test1::TestLoadRegisterZeroPage(
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x42;
+	memory[0x42] = 0x67;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(3, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x67);
+	EXPECT_EQ(CyclesUsed, 3);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+};
+
+void MOS6502Test1::TestLoadRegisterZeroPageX (
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+	// given
+	cpu.X = 0x05;
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x42;
+	memory[0x47] = 0x67;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(4, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x67);
+	EXPECT_EQ(CyclesUsed, 4);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+};
+
+void MOS6502Test1::TestLoadRegisterZeroPageY (
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+	// given
+	cpu.Y = 0x05;
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x42;
+	memory[0x47] = 0x67;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(4, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x67);
+	EXPECT_EQ(CyclesUsed, 4);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+};
+
+void MOS6502Test1::TestLoadRegisterAbsolute (
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+
+	// given
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x80;
+	memory[0xFFFE] = 0x54; // address 0x5480
+	memory[0x5480] = 0x37;
+	CPU cpu_copy = cpu;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x37);
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);	
+};
+
+void MOS6502Test1::TestLoadRegisterAbsoluteX(
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+
+	// given
+	cpu.X = 0x01;
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x80;
+	memory[0xFFFE] = 0x54; // address 0x5480 + 0x01 = 0x5481
+	memory[0x5481] = 0x37;
+	CPU cpu_copy = cpu;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x37);
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+}
+
+void MOS6502Test1::TestLoadRegisterAbsoluteY(
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+
+	// given
+	cpu.Y = 0x01;
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x80;
+	memory[0xFFFE] = 0x54; // address 0x5480 + 0x01 = 0x5481
+	memory[0x5481] = 0x37;
+	CPU cpu_copy = cpu;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x37);
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+}
+
+void MOS6502Test1::TestLoadRegisterAbsoluteXWithPageCrossing(
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+
+	// given
+	cpu.X = 0xFF;
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x02;
+	memory[0xFFFE] = 0x54; // address 0x5402 + 0xFF = 0x5501 that crosses page boundary
+	memory[0x5501] = 0x37; 
+	CPU cpu_copy = cpu;
+	constexpr s32 EXPECTED_CYCLES = 5;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x37);
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+}
+
+void MOS6502Test1::TestLoadRegisterAbsoluteYWithPageCrossing(
+	mos6502::Byte opcodeToTest,
+	mos6502::Byte mos6502::CPU::*registerToTest
+) {
+	using namespace mos6502;
+
+	// given
+	cpu.Y = 0xFF;
+	memory[0xFFFC] = opcodeToTest;
+	memory[0xFFFD] = 0x02;
+	memory[0xFFFE] = 0x54; // address 0x5402 + 0xFF = 0x5501 that crosses page boundary
+	memory[0x5501] = 0x37; 
+	constexpr s32 EXPECTED_CYCLES = 5;
+	CPU cpu_copy = cpu;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cpu.*registerToTest, 0x37);
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_FALSE(cpu.Z);
+	EXPECT_FALSE(cpu.N);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
+}
+
+TEST_F( MOS6502Test1, LDAImmeddiateCanLoadAValueIntoTheARegister ) {
+	using namespace mos6502;
+	TestLoadRegisterImmediate(CPU::LDA_IM, &CPU::A);
+}
+
+TEST_F( MOS6502Test1, LDXImmeddiateCanLoadAValueIntoTheXRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterImmediate(CPU::LDX_IM, &CPU::X);
+}
+
+TEST_F( MOS6502Test1, LDYImmeddiateCanLoadAValueIntoTheYRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterImmediate(CPU::LDY_IM, &CPU::Y);
+}
+
 
 TEST_F( MOS6502Test1, LDAImmeddiateCanAffectZeroFlag ) {
 	using namespace mos6502;
@@ -84,49 +308,39 @@ TEST_F( MOS6502Test1, LDAImmeddiateCanAffectZeroFlag ) {
 	// then
 	EXPECT_TRUE(cpu.Z);
 	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
 TEST_F( MOS6502Test1, LDAZeroPageCanLoadAValueIntoTheARegister ) {
 	using namespace mos6502;
+	TestLoadRegisterZeroPage(CPU::LDA_ZP, &CPU::A);
+}
 
-	// given
-	memory[0xFFFC] = CPU::LDA_ZP;
-	memory[0xFFFD] = 0x42;
-	memory[0x42] = 0x67;
-	CPU cpu_copy = cpu;
+TEST_F( MOS6502Test1, LDXZeroPageCanLoadAValueIntoTheXRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterZeroPage(CPU::LDX_ZP, &CPU::X);
+}
 
-	// when
-	s32 CyclesUsed = cpu.Execute(3, memory);
-
-	// then
-	EXPECT_EQ(cpu.A, 0x67);
-	EXPECT_EQ(CyclesUsed, 3);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+TEST_F( MOS6502Test1, LDYZeroPageCanLoadAValueIntoTheYRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterZeroPage(CPU::LDY_ZP, &CPU::Y);
 }
 
 TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegister ) {
 	using namespace mos6502;
-
-	// given
-	cpu.X = 0x05;
-	memory[0xFFFC] = CPU::LDA_ZP_X;
-	memory[0xFFFD] = 0x42;
-	memory[0x47] = 0x67;
-	CPU cpu_copy = cpu;
-
-	// when
-	s32 CyclesUsed = cpu.Execute(4, memory);
-
-	// then
-	EXPECT_EQ(cpu.A, 0x67);
-	EXPECT_EQ(CyclesUsed, 4);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	TestLoadRegisterZeroPageX(CPU::LDA_ZP_X, &CPU::A);
 }
+
+TEST_F( MOS6502Test1, LDXZeroPageYCanLoadAValueIntoTheXRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterZeroPageY(CPU::LDX_ZP_Y, &CPU::X);
+}
+
+TEST_F( MOS6502Test1, LDYZeroPageXCanLoadAValueIntoTheYRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterZeroPageX(CPU::LDY_ZP_X, &CPU::Y);
+}
+
 
 TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWraps ) {
 	using namespace mos6502;
@@ -146,121 +360,62 @@ TEST_F( MOS6502Test1, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWraps ) {
 	EXPECT_EQ(CyclesUsed, 4);
 	EXPECT_FALSE(cpu.Z);
 	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteCanLoadAValueIntoTheARegister ) {
 	using namespace mos6502;
-	
-	// given
-	memory[0xFFFC] = CPU::LDA_ABS;
-	memory[0xFFFD] = 0x80;
-	memory[0xFFFE] = 0x54; // address 0x5480
-	memory[0x5480] = 0x37;
-	CPU cpu_copy = cpu;
-	constexpr s32 EXPECTED_CYCLES = 4;
+	TestLoadRegisterAbsolute(CPU::LDA_ABS, &CPU::A);
+}
 
-	// when
-	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+TEST_F( MOS6502Test1, LDXAbsoluteCanLoadAValueIntoTheXRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterAbsolute(CPU::LDX_ABS, &CPU::X);
+}
 
-	// then
-	EXPECT_EQ(cpu.A, 0x37);
-	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+TEST_F( MOS6502Test1, LDYAbsoluteCanLoadAValueIntoTheYRegister ) {
+	using namespace mos6502;
+	TestLoadRegisterAbsolute(CPU::LDY_ABS, &CPU::Y);
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegister ) {
 	using namespace mos6502;
-
-	// given
-	cpu.X = 0x01;
-	memory[0xFFFC] = CPU::LDA_ABS_X;
-	memory[0xFFFD] = 0x80;
-	memory[0xFFFE] = 0x54; // address 0x5480 + 0x01 = 0x5481
-	memory[0x5481] = 0x37;
-	CPU cpu_copy = cpu;
-	constexpr s32 EXPECTED_CYCLES = 4;
-
-	// when
-	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
-
-	// then
-	EXPECT_EQ(cpu.A, 0x37);
-	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	TestLoadRegisterAbsoluteX(CPU::LDA_ABS_X, &CPU::A);
 }
 
-TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithCrossPageBoundary ) {
+TEST_F( MOS6502Test1, LDYAbsoluteXCanLoadAValueIntoTheYRegister ) {
 	using namespace mos6502;
+	TestLoadRegisterAbsoluteX(CPU::LDY_ABS_X, &CPU::Y);
+}
 
-	// given
-	cpu.X = 0xFF;
-	memory[0xFFFC] = CPU::LDA_ABS_X;
-	memory[0xFFFD] = 0x02;
-	memory[0xFFFE] = 0x54; // address 0x5402 + 0xFF = 0x5501 that crosses page boundary
-	memory[0x5501] = 0x37; 
-	constexpr s32 EXPECTED_CYCLES = 5;
-	CPU cpu_copy = cpu;
+TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithPageCrossing ) {
+	using namespace mos6502;
+	TestLoadRegisterAbsoluteXWithPageCrossing(CPU::LDA_ABS_X, &CPU::A);
+}
 
-	// when
-	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
-
-	// then
-	EXPECT_EQ(cpu.A, 0x37);
-	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+TEST_F( MOS6502Test1, LDYAbsoluteXCanLoadAValueIntoTheYRegisterWithPageCrossing ) {
+	using namespace mos6502;
+	TestLoadRegisterAbsoluteYWithPageCrossing(CPU::LDA_ABS_Y, &CPU::Y);
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegister ) {
 	using namespace mos6502;
-
-	// given
-	cpu.Y = 0x01;
-	memory[0xFFFC] = CPU::LDA_ABS_Y;
-	memory[0xFFFD] = 0x80;
-	memory[0xFFFE] = 0x54; // address 0x5480 + 0x01 = 0x5481
-	memory[0x5481] = 0x37;
-	CPU cpu_copy = cpu;
-	constexpr s32 EXPECTED_CYCLES = 4;
-
-	// when
-	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
-
-	// then
-	EXPECT_EQ(cpu.A, 0x37);
-	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	TestLoadRegisterAbsoluteY(CPU::LDA_ABS_Y, &CPU::A);
 }
 
-TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegisterWithCrossPageBoundary ) {
+TEST_F( MOS6502Test1, LDXAbsoluteYCanLoadAValueIntoTheXRegister ) {
 	using namespace mos6502;
+	TestLoadRegisterAbsoluteY(CPU::LDX_ABS_Y, &CPU::X);
+}
 
-	// given
-	cpu.Y = 0xFF;
-	memory[0xFFFC] = CPU::LDA_ABS_Y;
-	memory[0xFFFD] = 0x02;
-	memory[0xFFFE] = 0x54; // address 0x5402 + 0xFF = 0x5501 that crosses page boundary
-	memory[0x5501] = 0x37; 
-	constexpr s32 EXPECTED_CYCLES = 5;
-	CPU cpu_copy = cpu;
+TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegisterWithPageCrossing ) {
+	using namespace mos6502;
+	TestLoadRegisterAbsoluteYWithPageCrossing(CPU::LDA_ABS_Y, &CPU::A);
+}
 
-	// when
-	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
-
-	// then
-	EXPECT_EQ(cpu.A, 0x37);
-	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_FALSE(cpu.Z);
-	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+TEST_F( MOS6502Test1, LDXAbsoluteYCanLoadAValueIntoTheXRegisterWithPageCrossing ) {
+	using namespace mos6502;
+	TestLoadRegisterAbsoluteYWithPageCrossing(CPU::LDX_ABS_Y, &CPU::X);
 }
 
 TEST_F( MOS6502Test1, LDAIndirectXCanLoadAValueIntoTheARegister ) {
@@ -284,7 +439,7 @@ TEST_F( MOS6502Test1, LDAIndirectXCanLoadAValueIntoTheARegister ) {
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
 	EXPECT_FALSE(cpu.Z);
 	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
 TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegister ) {
@@ -308,7 +463,7 @@ TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegister ) {
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
 	EXPECT_FALSE(cpu.Z);
 	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
 TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegisterWhenCrossesPageBoundary ) {
@@ -332,5 +487,5 @@ TEST_F( MOS6502Test1, LDAIndirectYCanLoadAValueIntoTheARegisterWhenCrossesPageBo
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
 	EXPECT_FALSE(cpu.Z);
 	EXPECT_FALSE(cpu.N);
-	VerifyUnmodifiedFlagFromLDA(cpu, cpu_copy);
+	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }

@@ -55,6 +55,7 @@ class mos6502::CPU {
 	Byte N : 1; // Status flag - Negative Flag
 	 
 	static const Byte 
+		// LDA
 	    LDA_IM = 0xA9,
 		LDA_ZP = 0xA5,
 		LDA_ZP_X = 0xB5,
@@ -63,6 +64,21 @@ class mos6502::CPU {
 		LDA_ABS_Y = 0xB9,
 		LDA_IND_X = 0xA1,
 		LDA_IND_Y = 0xB1,
+
+		// LDX
+		LDX_IM = 0xA2,
+		LDX_ZP = 0xA6,
+		LDX_ZP_Y = 0xB6,
+		LDX_ABS = 0xAE,
+		LDX_ABS_Y = 0xBE,
+
+		// LDY
+		LDY_IM = 0xA0,
+		LDY_ZP = 0xA4,
+		LDY_ZP_X = 0xB4,
+		LDY_ABS = 0xAC,
+		LDY_ABS_X = 0xBC,
+
 		JSR = 0x20;
 
 	void Reset(Memory& memory) {
