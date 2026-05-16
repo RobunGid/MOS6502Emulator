@@ -40,7 +40,8 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 # source for the test executable
 set  (MOS6502_SOURCES
 		"src/main_6502.cpp"
-		"src/mos6502Tests.cpp")
+		"src/mos6502LoadRegisterTests.cpp"
+		"src/mos6502StoreRegisterTests.cpp")
 		
 source_group("src" FILES ${MOS6502_SOURCES})
 		

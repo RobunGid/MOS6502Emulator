@@ -79,6 +79,25 @@ class mos6502::CPU {
 		LDY_ABS = 0xAC,
 		LDY_ABS_X = 0xBC,
 
+		// STA
+		STA_ZP = 0x85,
+		STA_ZP_X = 0x95,
+		STA_ABS = 0x8D,
+		STA_ABS_X = 0x9D,
+		STA_ABS_Y = 0x99,
+		STA_IND_X = 0x81,
+		STA_IND_Y = 0x91,
+
+		// STX
+		STX_ZP = 0x86,
+		STX_ZP_Y = 0x96,
+		STX_ABS = 0x8E,
+
+		// STY
+		STY_ZP = 0x84,
+		STY_ZP_X = 0x94,
+		STY_ABS = 0x8c,
+
 		JSR = 0x20;
 
 	void Reset(Memory& memory) {
