@@ -65,6 +65,8 @@ void MOS6502Test1::TestLoadRegisterImmediate(
 	using namespace mos6502;
 
 	// given
+	cpu.Z = true;
+	cpu.N = false;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x84;
 	CPU cpu_copy = cpu;
@@ -86,6 +88,8 @@ void MOS6502Test1::TestLoadRegisterZeroPage(
 ) {
 	using namespace mos6502;
 
+	// given
+	cpu.Z = cpu.N = true;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x42;
 	memory[0x42] = 0x67;
@@ -108,9 +112,10 @@ void MOS6502Test1::TestLoadRegisterZeroPageX (
 ) {
 	using namespace mos6502;
 	// given
+	cpu.Z = cpu.N = true;
 	cpu.X = 0x05;
 	memory[0xFFFC] = opcodeToTest;
-	memory[0xFFFD] = 0x42;
+	memory[0xFFFD] = 0x42; // 0x42 + 0x05 = 0x47
 	memory[0x47] = 0x67;
 	CPU cpu_copy = cpu;
 
@@ -131,6 +136,7 @@ void MOS6502Test1::TestLoadRegisterZeroPageY (
 ) {
 	using namespace mos6502;
 	// given
+	cpu.Z = cpu.N = true;
 	cpu.Y = 0x05;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x42;
@@ -155,6 +161,7 @@ void MOS6502Test1::TestLoadRegisterAbsolute (
 	using namespace mos6502;
 
 	// given
+	cpu.Z = cpu.N = true;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x80;
 	memory[0xFFFE] = 0x54; // address 0x5480
@@ -180,6 +187,7 @@ void MOS6502Test1::TestLoadRegisterAbsoluteX(
 	using namespace mos6502;
 
 	// given
+	cpu.Z = cpu.N = true;
 	cpu.X = 0x01;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x80;
@@ -206,6 +214,7 @@ void MOS6502Test1::TestLoadRegisterAbsoluteY(
 	using namespace mos6502;
 
 	// given
+	cpu.Z = cpu.N = true;
 	cpu.Y = 0x01;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x80;
@@ -232,6 +241,7 @@ void MOS6502Test1::TestLoadRegisterAbsoluteXWithPageCrossing(
 	using namespace mos6502;
 
 	// given
+	cpu.Z = cpu.N = true;
 	cpu.X = 0xFF;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x02;
@@ -258,6 +268,7 @@ void MOS6502Test1::TestLoadRegisterAbsoluteYWithPageCrossing(
 	using namespace mos6502;
 
 	// given
+	cpu.Z = cpu.N = true;
 	cpu.Y = 0xFF;
 	memory[0xFFFC] = opcodeToTest;
 	memory[0xFFFD] = 0x02;
@@ -395,7 +406,7 @@ TEST_F( MOS6502Test1, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithPageCrossing 
 
 TEST_F( MOS6502Test1, LDYAbsoluteXCanLoadAValueIntoTheYRegisterWithPageCrossing ) {
 	using namespace mos6502;
-	TestLoadRegisterAbsoluteYWithPageCrossing(CPU::LDA_ABS_Y, &CPU::Y);
+	TestLoadRegisterAbsoluteXWithPageCrossing(CPU::LDY_ABS_X, &CPU::Y);
 }
 
 TEST_F( MOS6502Test1, LDAAbsoluteYCanLoadAValueIntoTheARegister ) {

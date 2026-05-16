@@ -89,7 +89,7 @@ class mos6502::CPU {
 		memory.Init();
 	}
     // Read byte from memory at Program Counter address and increment PC
-	Byte FetchByte(s32& Cycles, Memory& memory) {
+	Byte FetchByte(s32& Cycles, const Memory& memory) {
 		Byte data = memory[PC];
 		PC++;
 		Cycles--;
@@ -118,7 +118,7 @@ class mos6502::CPU {
 	}
 
 	// Read 2 bytes from memory at Program Counter address and increment pC
-	Word FetchWord(s32& Cycles, Memory& memory) {
+	Word FetchWord(s32& Cycles, const Memory& memory) {
 		Word data = memory[PC];
 		PC++;
 		
@@ -137,5 +137,18 @@ class mos6502::CPU {
 
 	// Return actual number of cycles that were used
 	s32 Execute(s32 Cycles, Memory& mem);
+
+	// Address Mode: Zero Page
+	Word GetAddressZeroPage(s32& Cycles, const Memory& memory);
+	// Address Mode: Zero Page X
+	Word GetAddressZeroPageX(s32& Cycles, const Memory& memory);
+	// Address Mode: Zero Page Y
+	Word GetAddressZeroPageY(s32& Cycles, const Memory& memory);
+	// Address Mode: Absolute
+	Word GetAddressAbsolute(s32& Cycles, const Memory& memory);
+	// Address Mode: Absolute X
+	Word GetAddressAbsoluteX(s32& Cycles, const Memory& memory);
+	// Address Mode: Absolute Y
+	Word GetAddressAbsoluteY(s32& Cycles, const Memory& memory);
 };
 
