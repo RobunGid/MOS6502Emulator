@@ -104,6 +104,13 @@ class mos6502::CPU {
 		JMP_ABS = 0x4C,
 		JMP_IND = 0x6C,
 
+		TSX = 0xBA,
+		TXS = 0x9A,
+		PHA = 0x48,
+		PHP = 0x08,
+		PLA = 0x68,
+		PLP = 0x28,
+
 		JSR = 0x20,
 		RTS = 0x60
 		;
@@ -162,13 +169,27 @@ class mos6502::CPU {
 	}
 
 	// Push PC-1 onto the stack
-	void PushPCToStack( s32& Cycles, Memory& memory) {
+	void PushPCToStack(s32& Cycles, Memory& memory) {
 		WriteWord(PC - 1, Cycles, SPToAddress()-1, memory);
 		SP -= 2;
 	}
 
+	void PushByteOntoStack(s32& Cycles, Byte value, Memory& memory) {
+		memory[SPToAddress()] = value;
+		SP--;
+		Cycles -= 2;
+	}
+
+	Byte PopByteFromStack(s32& Cycles, Memory& memory) {
+		SP++;
+		const Word SPWord = SPToAddress();
+		Byte value = memory[SPWord];
+		Cycles -= 3;
+		return value;
+	}
+
 	// Push PC-1 onto the stack
-	Word PopWordFromStack( s32& Cycles, Memory& memory) {
+	Word PopWordFromStack(s32& Cycles, Memory& memory) {
 		Word valueFromStack = ReadWord(Cycles, SPToAddress()+1, memory);
 		SP += 2;
 		Cycles--;

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <m6502.h>
 
-class MOS6502StoreRegisterTests : public testing::Test {
+class MOS6502JumpsAndCallsTests : public testing::Test {
 	public:
 		mos6502::Memory memory;
 		mos6502::CPU cpu;
@@ -14,7 +14,7 @@ class MOS6502StoreRegisterTests : public testing::Test {
 
 };
 
-TEST_F(MOS6502StoreRegisterTests, JSRCanJumpToASubroutineAndJumpBack) {
+TEST_F(MOS6502JumpsAndCallsTests, JSRCanJumpToASubroutineAndJumpBack) {
 	using namespace mos6502;
 	// given
 	cpu.Reset( 0xFF00, memory );
@@ -36,7 +36,7 @@ TEST_F(MOS6502StoreRegisterTests, JSRCanJumpToASubroutineAndJumpBack) {
 	EXPECT_EQ(cpu.SP, cpu_copy.SP);
 }
 
-TEST_F(MOS6502StoreRegisterTests, JSRNotAffectProcessorStatus) {
+TEST_F(MOS6502JumpsAndCallsTests, JSRNotAffectProcessorStatus) {
 	using namespace mos6502;
 	// given
 	cpu.Reset( 0xFF00, memory );
@@ -56,7 +56,7 @@ TEST_F(MOS6502StoreRegisterTests, JSRNotAffectProcessorStatus) {
 	EXPECT_EQ(cpu.PC, 0x8000);
 }
 
-TEST_F(MOS6502StoreRegisterTests, RTSNotAffectProcessorStatus) {
+TEST_F(MOS6502JumpsAndCallsTests, RTSNotAffectProcessorStatus) {
 	using namespace mos6502;
 	// given
 	cpu.Reset( 0xFF00, memory );
@@ -76,7 +76,7 @@ TEST_F(MOS6502StoreRegisterTests, RTSNotAffectProcessorStatus) {
 	EXPECT_EQ(cpu.PC, 0xFF03);
 }
 
-TEST_F(MOS6502StoreRegisterTests, JMPAbsoluteCanJumpToNewProgramLocation) {
+TEST_F(MOS6502JumpsAndCallsTests, JMPAbsoluteCanJumpToNewProgramLocation) {
 	using namespace mos6502;
 	// given
 	cpu.Reset( 0xFF00, memory );
@@ -96,7 +96,7 @@ TEST_F(MOS6502StoreRegisterTests, JMPAbsoluteCanJumpToNewProgramLocation) {
 	EXPECT_EQ(cpu.PC, 0x8000);
 }
 
-TEST_F(MOS6502StoreRegisterTests, JMPIndirectCanJumpToNewProgramLocation) {
+TEST_F(MOS6502JumpsAndCallsTests, JMPIndirectCanJumpToNewProgramLocation) {
 	using namespace mos6502;
 	// given
 	cpu.Reset( 0xFF00, memory );

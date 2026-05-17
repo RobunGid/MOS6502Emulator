@@ -261,6 +261,36 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Cycles--;
 			} break;
 
+			case TSX: {
+				X = SP;
+				Cycles--;
+				Flag.Z = X == 0;
+				Flag.N = (X & 0b10000000) > 0;
+			} break;
+
+			case TXS: {
+				SP = X;
+				Cycles--;
+			} break;
+
+			case PHA: {
+				PushByteOntoStack(Cycles, A, memory);
+			} break;
+
+			case PHP: {
+				PushByteOntoStack(Cycles, PS, memory);
+			} break;
+
+			case PLA: {
+				A = PopByteFromStack(Cycles, memory);
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+			} break;
+
+			case PLP: {
+				PS = PopByteFromStack(Cycles, memory);
+			} break;
+
 			case RTS: {
 				Word returnAddress = PopWordFromStack(Cycles, memory);
 				PC = returnAddress + 1;
