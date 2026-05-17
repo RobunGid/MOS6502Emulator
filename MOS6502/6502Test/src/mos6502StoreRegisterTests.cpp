@@ -18,13 +18,13 @@ class MOS6502StoreRegisterTests : public testing::Test {
 };
 
 static void VerifyUnmodifiedFlagFromStoreRegister(const mos6502::CPU& cpu, const mos6502::CPU& cpu_copy) {
-	EXPECT_EQ(cpu.Z, cpu_copy.Z);
-	EXPECT_EQ(cpu.N, cpu_copy.N);
-	EXPECT_EQ(cpu.C, cpu_copy.C);
-	EXPECT_EQ(cpu.I, cpu_copy.I);
-	EXPECT_EQ(cpu.D, cpu_copy.D);
-	EXPECT_EQ(cpu.B, cpu_copy.B);
-	EXPECT_EQ(cpu.V, cpu_copy.V);
+	EXPECT_EQ(cpu.Flag.Z, cpu_copy.Flag.Z);
+	EXPECT_EQ(cpu.Flag.N, cpu_copy.Flag.N);
+	EXPECT_EQ(cpu.Flag.C, cpu_copy.Flag.C);
+	EXPECT_EQ(cpu.Flag.I, cpu_copy.Flag.I);
+	EXPECT_EQ(cpu.Flag.D, cpu_copy.Flag.D);
+	EXPECT_EQ(cpu.Flag.B, cpu_copy.Flag.B);
+	EXPECT_EQ(cpu.Flag.V, cpu_copy.Flag.V);
 }
 
 void MOS6502StoreRegisterTests::TestStoreRegisterZeroPage(

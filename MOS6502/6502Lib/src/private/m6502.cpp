@@ -88,8 +88,8 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 	// Load given register with value from given address
 	auto loadRegister = [&Cycles, &memory, this] (Word address, Byte& Register) {
 		Register = ReadByte(Cycles, address, memory);
-		Z = Register == 0;
-		N = (Register & 0b10000000) > 0;
+		Flag.Z = Register == 0;
+		Flag.N = (Register & 0b10000000) > 0;
 	};
 
 	while (Cycles > 0) {
@@ -98,20 +98,20 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 
 			case LDA_IM: {
 				A = FetchByte(Cycles, memory);
-				Z = A == 0;
-				N = (A & 0b10000000) > 0;
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
 			} break;
 
 			case LDX_IM: {
 				X = FetchByte(Cycles, memory);
-				Z = X == 0;
-				N = (X & 0b10000000) > 0;
+				Flag.Z = X == 0;
+				Flag.N = (X & 0b10000000) > 0;
 			} break;
 
 			case LDY_IM: {
 				Y = FetchByte(Cycles, memory);
-				Z = Y == 0;
-				N = (Y & 0b10000000) > 0;
+				Flag.Z = Y == 0;
+				Flag.N = (Y & 0b10000000) > 0;
 			} break;
 
 			case LDA_ZP: {

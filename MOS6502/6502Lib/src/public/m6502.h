@@ -11,6 +11,7 @@ namespace mos6502 {
 
 	class Memory;
 	class CPU;
+	struct StatusFlags;
 }
 
 class mos6502::Memory {
@@ -33,19 +34,27 @@ class mos6502::Memory {
 	}
 };
 
+struct mos6502::StatusFlags {
+		Byte C : 1; // Status flag - Carry Flag
+		Byte Z : 1; // Status flag - Zero Flag
+		Byte I : 1; // Status flag - Interrupt Disable
+		Byte D : 1; // Status flag - Decimal Mode
+		Byte B : 1; // Status flag - Break Command
+		Byte Unused : 1; // Status flag - Break Command
+		Byte V : 1; // Status flag - Overflow Flag
+		Byte N : 1; // Status flag - Negative Flag
+};
+
 class mos6502::CPU {
 	public:
 	Word PC; // Program Counter
 	Byte SP; // Stack Pointer
 	Byte A, X, Y; // Accumulator, X register, Y register
 
-	Byte C : 1; // Status flag - Carry Flag
-	Byte Z : 1; // Status flag - Zero Flag
-	Byte I : 1; // Status flag - Interrupt Disable
-	Byte D : 1; // Status flag - Decimal Mode
-	Byte B : 1; // Status flag - Break Command
-	Byte V : 1; // Status flag - Overflow Flag
-	Byte N : 1; // Status flag - Negative Flag
+	union {
+		Byte PS;
+		mos6502::StatusFlags Flag;
+	};
 	 
 	static const Byte 
 		// LDA
@@ -97,7 +106,7 @@ class mos6502::CPU {
 	void Reset(Word resetVector, Memory& memory) {
 		PC = resetVector;
 		SP = 0xFF;
-		C = Z = I = D = B = V = N = 0;
+		Flag.C = Flag.Z = Flag.I = Flag.D = Flag.B = Flag.V = Flag.N = 0;
 		A = X = Y = 0;
 		memory.Init();
 	}
