@@ -262,9 +262,31 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 			} break;
 
 			case RTS: {
-				Word ReturnAddress = PopWordFromStack(Cycles, memory);
-				PC = ReturnAddress + 1;
+				Word returnAddress = PopWordFromStack(Cycles, memory);
+				PC = returnAddress + 1;
 				Cycles -= 2;
+			} break;
+
+			/*
+			An original 6502 has does not correctly fetch 
+			the target address if the indirect vector falls 
+			on a page boundary (e.g. $xxFF where xx is any 
+			value from $00 to $FF). In this case fetches 
+			the LSB from $xxFF as expected but takes the MSB 
+			from $xx00. This is fixed in some later chips 
+			like the 65SC02 so for compatibility always ensure 
+			the indirect vector is not at the end of the page.
+			https://web.archive.org/web/20200716035408/http://www.obelisk.me.uk/6502/reference.html#JMP
+			*/
+			case JMP_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				PC = address;
+			} break;
+
+			case JMP_IND: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Word actual_address = ReadWord(Cycles, address, memory);
+				PC = actual_address;
 			} break;
 
 			default: {

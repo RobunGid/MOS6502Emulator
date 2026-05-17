@@ -100,8 +100,14 @@ class mos6502::CPU {
 		STY_ZP_X = 0x94,
 		STY_ABS = 0x8c,
 
+		// JMP
+		JMP_ABS = 0x4C,
+		JMP_IND = 0x6C,
+
 		JSR = 0x20,
-		RTS = 0x60;
+		RTS = 0x60
+		;
+
 
 	void Reset(Word resetVector, Memory& memory) {
 		PC = resetVector;
