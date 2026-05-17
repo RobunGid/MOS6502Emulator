@@ -6,7 +6,7 @@ class MOS6502StoreRegisterTests : public testing::Test {
 		mos6502::Memory memory;
 		mos6502::CPU cpu;
 		virtual void SetUp() {
-			cpu.Reset(memory);
+			cpu.Reset(0xFFFC, memory);
 		}
 		virtual void TearDown() {
 
@@ -164,7 +164,7 @@ TEST_F(MOS6502StoreRegisterTests, STYZeroPageXCanStoreTheARegisterIntoMemory) {
 
 TEST_F(MOS6502StoreRegisterTests, STXZeroPageYCanStoreTheARegisterIntoMemory) {
 	using namespace mos6502;
-	TestStoreRegisterZeroPageX(CPU::STX_ZP_Y, &CPU::X);
+	TestStoreRegisterZeroPageY(CPU::STX_ZP_Y, &CPU::X);
 }
 
 TEST_F(MOS6502StoreRegisterTests, STAAbsoluteXCanStoreTheARegisterIntoMemory) {
@@ -195,7 +195,7 @@ TEST_F(MOS6502StoreRegisterTests, STAAbsoluteYCanStoreTheARegisterIntoMemory) {
 	// given
 	cpu.Y = 0x0F;
 	cpu.A = 0x42;
-	memory[0xFFFC] = CPU::STA_ABS_X;
+	memory[0xFFFC] = CPU::STA_ABS_Y;
 	memory[0xFFFD] = 0x40;
 	memory[0xFFFE] = 0x8D;
 	memory[0x8D4F] = 0x00;
@@ -238,7 +238,7 @@ TEST_F(MOS6502StoreRegisterTests, STAIndirectYCanStoreTheARegisterIntoMemory) {
 	using namespace mos6502;
 
 	// given
-	cpu.X = 0x0F;
+	cpu.Y = 0x0F;
 	cpu.A = 0x42;
 	memory[0xFFFC] = CPU::STA_IND_Y;
 	memory[0xFFFD] = 0x40;

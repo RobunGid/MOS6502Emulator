@@ -31,13 +31,6 @@ class mos6502::Memory {
 	public: Byte& operator[](u32 address) {
 		return Data[address];
 	}
-
-	// Write 2 bytes
-	public: void writeWord(Word word, u32 address, s32& Cycles) {
-		Data[address] = word & 0xFF;
-		Data[address + 1] = (word >> 8);
-		Cycles -= 2;
-	}
 };
 
 class mos6502::CPU {
@@ -98,10 +91,11 @@ class mos6502::CPU {
 		STY_ZP_X = 0x94,
 		STY_ABS = 0x8c,
 
-		JSR = 0x20;
+		JSR = 0x20,
+		RTS = 0x60;
 
-	void Reset(Memory& memory) {
-		PC = 0xFFFC;
+	void Reset(Word resetVector, Memory& memory) {
+		PC = resetVector;
 		SP = 0xFF;
 		C = Z = I = D = B = V = N = 0;
 		A = X = Y = 0;
@@ -123,7 +117,7 @@ class mos6502::CPU {
 	}
 
 	// Read byte at given any Address
-	Word ReadWord(s32& Cycles, Word Address, Memory& memory) {
+	Word ReadWord(s32& Cycles, Word Address, const Memory& memory) {
 		Word data = memory[Address];
 		data |= (memory[Address+1] << 8);
 		
@@ -136,6 +130,36 @@ class mos6502::CPU {
 		return data;
 	}
 
+	void WriteByte(Byte value, s32& cycles, Word address, Memory& memory) {
+		memory[address] = value;
+		cycles--;
+	}
+
+	void WriteWord(Word value, s32& Cycles, Word address, Memory& memory) {
+		memory[address] = value & 0xFF;
+		memory[address + 1] = (value >> 8);
+		Cycles -= 2;
+	}
+
+	// Stack Pointer as a full 16-bit address in the 1st page
+	Word SPToAddress () const {
+		return 0x100 | SP;
+	}
+
+	// Push PC-1 onto the stack
+	void PushPCToStack( s32& Cycles, Memory& memory) {
+		WriteWord(PC - 1, Cycles, SPToAddress()-1, memory);
+		SP -= 2;
+	}
+
+	// Push PC-1 onto the stack
+	Word PopWordFromStack( s32& Cycles, Memory& memory) {
+		Word valueFromStack = ReadWord(Cycles, SPToAddress()+1, memory);
+		SP += 2;
+		Cycles--;
+		return valueFromStack;
+	}
+
 	// Read 2 bytes from memory at Program Counter address and increment pC
 	Word FetchWord(s32& Cycles, const Memory& memory) {
 		Word data = memory[PC];
@@ -145,12 +169,6 @@ class mos6502::CPU {
         PC++;
 		
 		Cycles -= 2;
-
-
-		// if (PLATFORM_BIG_ENDIAN) {
-	    // swapBytesInWord(data);
-		// }
-
 		return data;
 	}
 
@@ -167,7 +185,17 @@ class mos6502::CPU {
 	Word GetAddressAbsolute(s32& Cycles, const Memory& memory);
 	// Address Mode: Absolute X
 	Word GetAddressAbsoluteX(s32& Cycles, const Memory& memory);
+	// Address Mode: Absolute X always consuming 5 cycles (STA Absolute, X)
+	Word GetAddressAbsoluteX_5(s32& Cycles, const Memory& memory);
 	// Address Mode: Absolute Y
 	Word GetAddressAbsoluteY(s32& Cycles, const Memory& memory);
+	// Address Mode: Absolute Y always consuming 5 cycles (STA Absolute, Y)
+	Word GetAddressAbsoluteY_5(s32& Cycles, const Memory& memory);
+	// Address Mode: Indirect X | Indexed Indirect
+	Word GetAddressIndirectX(s32& Cycles, const Memory& memory);
+	// Address Mode: Indirect Y | Indirect Indexed
+	Word GetAddressIndirectY(s32& Cycles, const Memory& memory);
+	// Address Mode: Indirect Y | Indirect Indexed always consuming 6 cycles (STA Indirect, Y)
+	Word GetAddressIndirectY_6(s32& Cycles, const Memory& memory);
 };
 

@@ -33,12 +33,52 @@ mos6502::Word mos6502::CPU::GetAddressAbsoluteX(mos6502::s32& Cycles, const mos6
 	return address;
 }
 
+mos6502::Word mos6502::CPU::GetAddressAbsoluteX_5(mos6502::s32& Cycles, const mos6502::Memory& memory) {
+	Word address = FetchWord(Cycles, memory);
+	address += X;
+	Cycles--;
+	return address;
+}
+
 mos6502::Word mos6502::CPU::GetAddressAbsoluteY(mos6502::s32& Cycles, const mos6502::Memory& memory) {
 	Word address = FetchWord(Cycles, memory);
 	address += Y;
 	if (((address & 0xFF) + Y) > 0xFF) {
 		Cycles--;
 	};
+	return address;
+}
+
+mos6502::Word mos6502::CPU::GetAddressAbsoluteY_5(mos6502::s32& Cycles, const mos6502::Memory& memory) {
+	Word address = FetchWord(Cycles, memory);
+	address += Y;
+	Cycles--;
+	return address;
+}
+
+mos6502::Word mos6502::CPU::GetAddressIndirectX(mos6502::s32& Cycles, const mos6502::Memory& memory) {
+	Byte zero_page_address = FetchByte(Cycles, memory);
+	zero_page_address += X;
+	Cycles--;
+	Word address = ReadWord(Cycles, zero_page_address, memory);
+	return address;
+}
+
+mos6502::Word mos6502::CPU::GetAddressIndirectY(mos6502::s32& Cycles, const mos6502::Memory& memory) {
+	Byte zero_page_address = FetchByte(Cycles, memory);
+	Word address = ReadWord(Cycles, zero_page_address, memory);
+	address += Y;
+	if (((address & 0xFF) + Y) > 0xFF) {
+		Cycles--;
+	};
+	return address;
+}
+
+mos6502::Word mos6502::CPU::GetAddressIndirectY_6(mos6502::s32& Cycles, const mos6502::Memory& memory) {
+	Byte zero_page_address = FetchByte(Cycles, memory);
+	Word address = ReadWord(Cycles, zero_page_address, memory);
+	address += Y;
+	Cycles--;
 	return address;
 }
 
@@ -140,29 +180,91 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 			} break;
 
 			case LDA_IND_X: {
-				Byte zero_page_address = FetchByte(Cycles, memory);
-				zero_page_address += X;
-				Cycles--;
-				Word address = ReadWord(Cycles, zero_page_address, memory);
+				Word address = GetAddressIndirectX(Cycles, memory);
 				loadRegister(address, A);
 			} break;
 
 			case LDA_IND_Y: {
-				Byte zero_page_address = FetchByte(Cycles, memory);
-				Word address = ReadWord(Cycles, zero_page_address, memory);
-				address += Y;
-				if (((address & 0xFF) + Y) > 0xFF) {
-					Cycles--;
-				};
+				Word address = GetAddressIndirectY(Cycles, memory);
 				loadRegister(address, A);
+			} break;
+
+			case STA_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STA_ZP_X: {
+				Word address = GetAddressZeroPageX(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STX_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				WriteByte(X, Cycles, address, memory);
+			} break;
+
+			case STX_ZP_Y: {
+				Word address = GetAddressZeroPageY(Cycles, memory);
+				WriteByte(X, Cycles, address, memory);
+			} break;
+
+			case STY_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				WriteByte(Y, Cycles, address, memory);
+			} break;
+
+			case STY_ZP_X: {
+				Word address = GetAddressZeroPageX(Cycles, memory);
+				WriteByte(Y, Cycles, address, memory);
+			} break;
+
+			case STA_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STA_ABS_X: {
+				Word address = GetAddressAbsoluteX_5(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STA_ABS_Y: {
+				Word address = GetAddressAbsoluteY_5(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STA_IND_X: {
+				Word address = GetAddressIndirectX(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STA_IND_Y: {
+				Word address = GetAddressIndirectY_6(Cycles, memory);
+				WriteByte(A, Cycles, address, memory);
+			} break;
+
+			case STX_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				WriteByte(X, Cycles, address, memory);
+			} break;
+
+			case STY_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				WriteByte(Y, Cycles, address, memory);
 			} break;
 
 			case JSR: {
 				Word subAddress = FetchWord(Cycles, memory);
-				memory.writeWord(PC - 1, SP, Cycles);
-				SP += 2;
+				PushPCToStack(Cycles, memory);
 				PC = subAddress;
 				Cycles--;
+			} break;
+
+			case RTS: {
+				Word ReturnAddress = PopWordFromStack(Cycles, memory);
+				PC = ReturnAddress + 1;
+				Cycles -= 2;
 			} break;
 
 			default: {

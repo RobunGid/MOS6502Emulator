@@ -6,7 +6,7 @@ class MOS6502LoadRegisterTests : public testing::Test {
 		mos6502::Memory memory;
 		mos6502::CPU cpu;
 		virtual void SetUp() {
-			cpu.Reset(memory);
+			cpu.Reset(0xFFFC, memory);
 		}
 		virtual void TearDown() {
 
