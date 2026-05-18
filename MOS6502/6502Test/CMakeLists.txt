@@ -43,7 +43,8 @@ set  (MOS6502_SOURCES
 		"src/mos6502LoadRegisterTests.cpp"
 		"src/mos6502StoreRegisterTests.cpp"
 		"src/mos6502JumpsAndCallsTests.cpp"
-		"src/mos6502StackOperationsTests")
+		"src/mos6502StackOperationsTests"
+		"src/mos6502LogicalOperationsTests")
 		
 source_group("src" FILES ${MOS6502_SOURCES})
 		

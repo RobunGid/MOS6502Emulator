@@ -104,12 +104,43 @@ class mos6502::CPU {
 		JMP_ABS = 0x4C,
 		JMP_IND = 0x6C,
 
+		// Stack Operations
 		TSX = 0xBA,
 		TXS = 0x9A,
 		PHA = 0x48,
 		PHP = 0x08,
 		PLA = 0x68,
 		PLP = 0x28,
+
+		// AND
+		AND_IM = 0x29,
+		AND_ZP = 0x25,
+		AND_ZP_X = 0x35,
+		AND_ABS = 0x2D,
+		AND_ABS_X = 0x3D,
+		AND_ABS_Y = 0x39,
+		AND_IND_X = 0x21,
+		AND_IND_Y = 0x31,
+
+		// ORA
+		ORA_IM = 0x09,
+		ORA_ZP = 005,
+		ORA_ZP_X = 0x15,
+		ORA_ABS = 0x0D,
+		ORA_ABS_X = 0x1D,
+		ORA_ABS_Y = 0x19,
+		ORA_IND_X = 0x01,
+		ORA_IND_Y = 0x11,
+
+		// EOR
+		EOR_IM = 0x49,
+		EOR_ZP = 0x45,
+		EOR_ZP_X = 0x55,
+		EOR_ABS = 0x4D,
+		EOR_ABS_X = 0x5D,
+		EOR_ABS_Y = 0x59,
+		EOR_IND_X = 0x41,
+		EOR_IND_Y = 0x51,
 
 		JSR = 0x20,
 		RTS = 0x60

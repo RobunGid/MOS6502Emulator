@@ -26,11 +26,11 @@ mos6502::Word mos6502::CPU::GetAddressAbsolute(mos6502::s32& Cycles, const mos65
 
 mos6502::Word mos6502::CPU::GetAddressAbsoluteX(mos6502::s32& Cycles, const mos6502::Memory& memory) {
 	Word address = FetchWord(Cycles, memory);
-	address += X;
+	Word address_With_offset = address + X;
 	if (((address & 0xFF) + X) > 0xFF) {
 		Cycles--;
 	};
-	return address;
+	return address_With_offset;
 }
 
 mos6502::Word mos6502::CPU::GetAddressAbsoluteX_5(mos6502::s32& Cycles, const mos6502::Memory& memory) {
@@ -42,11 +42,11 @@ mos6502::Word mos6502::CPU::GetAddressAbsoluteX_5(mos6502::s32& Cycles, const mo
 
 mos6502::Word mos6502::CPU::GetAddressAbsoluteY(mos6502::s32& Cycles, const mos6502::Memory& memory) {
 	Word address = FetchWord(Cycles, memory);
-	address += Y;
+	Word address_With_offset = address + Y;
 	if (((address & 0xFF) + Y) > 0xFF) {
 		Cycles--;
 	};
-	return address;
+	return address_With_offset;
 }
 
 mos6502::Word mos6502::CPU::GetAddressAbsoluteY_5(mos6502::s32& Cycles, const mos6502::Memory& memory) {
@@ -67,11 +67,11 @@ mos6502::Word mos6502::CPU::GetAddressIndirectX(mos6502::s32& Cycles, const mos6
 mos6502::Word mos6502::CPU::GetAddressIndirectY(mos6502::s32& Cycles, const mos6502::Memory& memory) {
 	Byte zero_page_address = FetchByte(Cycles, memory);
 	Word address = ReadWord(Cycles, zero_page_address, memory);
-	address += Y;
+	Word address_With_offset = address + Y;
 	if (((address & 0xFF) + Y) > 0xFF) {
 		Cycles--;
 	};
-	return address;
+	return address_With_offset;
 }
 
 mos6502::Word mos6502::CPU::GetAddressIndirectY_6(mos6502::s32& Cycles, const mos6502::Memory& memory) {
@@ -86,10 +86,35 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 	const s32 CyclesRequested = Cycles;
 
 	// Load given register with value from given address
+	// and set appropriate flags
 	auto loadRegister = [&Cycles, &memory, this] (Word address, Byte& Register) {
 		Register = ReadByte(Cycles, address, memory);
 		Flag.Z = Register == 0;
 		Flag.N = (Register & 0b10000000) > 0;
+	};
+
+	// Apply logical AND to A register with value from given 
+	// address and set appropriate flags
+	auto applyANDToARegister = [&Cycles, &memory, this] (Word address) {
+		A &= ReadByte(Cycles, address, memory);
+		Flag.Z = A == 0;
+		Flag.N = (A & 0b10000000) > 0;
+	};
+
+	// Apply logical AND to A register with value from given 
+	// address and set appropriate flags
+	auto applyORToARegister = [&Cycles, &memory, this] (Word address) {
+		A |= ReadByte(Cycles, address, memory);
+		Flag.Z = A == 0;
+		Flag.N = (A & 0b10000000) > 0;
+	};
+
+	// Apply logical AND to A register with value from given 
+	// address and set appropriate flags
+	auto applyEORToARegister = [&Cycles, &memory, this] (Word address) {
+		A ^= ReadByte(Cycles, address, memory);
+		Flag.Z = A == 0;
+		Flag.N = (A & 0b10000000) > 0;
 	};
 
 	while (Cycles > 0) {
@@ -295,6 +320,129 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Word returnAddress = PopWordFromStack(Cycles, memory);
 				PC = returnAddress + 1;
 				Cycles -= 2;
+			} break;
+
+			case AND_IM: {
+				A &= FetchByte(Cycles, memory);
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+			} break;
+
+			case ORA_IM: {
+				A |= FetchByte(Cycles, memory);
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+			} break;
+
+			case EOR_IM: {
+				A ^= FetchByte(Cycles, memory);
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+			} break;
+
+			case AND_ZP: {
+				Byte address = GetAddressZeroPage(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_ZP: {
+				Byte address = GetAddressZeroPage(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_ZP: {
+				Byte address = GetAddressZeroPage(Cycles, memory); 
+				applyEORToARegister(address);
+			} break;
+
+			case AND_ZP_X: {
+				Byte address = GetAddressZeroPageX(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_ZP_X: {
+				Byte address = GetAddressZeroPageX(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_ZP_X: {
+				Byte address = GetAddressZeroPageX(Cycles, memory); 
+				applyEORToARegister(address);
+			} break;
+
+			case AND_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory); 
+				applyEORToARegister(address);
+			} break;
+
+			case AND_ABS_X: {
+				Word address = GetAddressAbsoluteX(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_ABS_X: {
+				Word address = GetAddressAbsoluteX(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_ABS_X: {
+				Word address = GetAddressAbsoluteX(Cycles, memory); 
+				applyEORToARegister(address);
+			} break;
+
+			case AND_ABS_Y: {
+				Word address = GetAddressAbsoluteY(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_ABS_Y: {
+				Word address = GetAddressAbsoluteY(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_ABS_Y: {
+				Word address = GetAddressAbsoluteY(Cycles, memory); 
+				applyEORToARegister(address);
+			} break;
+
+			case AND_IND_X: {
+				Word address = GetAddressIndirectX(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_IND_X: {
+				Word address = GetAddressIndirectX(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_IND_X: {
+				Word address = GetAddressIndirectX(Cycles, memory); 
+				applyEORToARegister(address);
+			} break;
+
+			case AND_IND_Y: {
+				Word address = GetAddressIndirectY(Cycles, memory); 
+				applyANDToARegister(address);
+			} break;
+
+			case ORA_IND_Y: {
+				Word address = GetAddressIndirectY(Cycles, memory); 
+				applyORToARegister(address);
+			} break;
+
+			case EOR_IND_Y: {
+				Word address = GetAddressIndirectY(Cycles, memory); 
+				applyEORToARegister(address);
 			} break;
 
 			/*
