@@ -141,6 +141,8 @@ class mos6502::CPU {
 		EOR_ABS_Y = 0x59,
 		EOR_IND_X = 0x41,
 		EOR_IND_Y = 0x51,
+		BIT_ZP = 0x24,
+		BIT_ABS = 0x2C,
 
 		JSR = 0x20,
 		RTS = 0x60

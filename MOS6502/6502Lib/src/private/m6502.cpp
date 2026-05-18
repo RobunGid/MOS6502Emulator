@@ -445,6 +445,20 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				applyEORToARegister(address);
 			} break;
 
+			case BIT_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				Word value = ReadByte(Cycles, address, memory);
+				Flag.Z = (A & value) == 0;
+				PS = (value & 0b11000000) | (PS & 0b00111111);
+			} break;
+
+			case BIT_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Word value = ReadByte(Cycles, address, memory);
+				Flag.Z = (A & value) == 0;
+				PS = (value & 0b11000000) | (PS & 0b00111111);
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 

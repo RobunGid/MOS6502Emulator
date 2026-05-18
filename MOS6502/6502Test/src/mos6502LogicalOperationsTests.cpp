@@ -741,3 +741,158 @@ TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirec
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectYWithPageCrossing(LogicalOperations::Eor);
 }
+
+TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPage ) {
+	using namespace mos6502;
+
+	// given
+	cpu.A = 0xCC;
+	cpu.Flag.V = cpu.Flag.N = false;
+	memory[0xFFFC] = CPU::BIT_ZP;
+	memory[0xFFFD] = 0x47;
+	memory[0x0047] = 0xCC;
+	constexpr s32 EXPECTED_CYCLES = 3;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.A, 0xCC);
+	
+	
+	EXPECT_FALSE(cpu.Flag.Z);
+	
+	EXPECT_TRUE(cpu.Flag.N);
+	EXPECT_TRUE(cpu.Flag.V);
+};
+
+TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPageOverflowNonNegative ) {
+	using namespace mos6502;
+
+	// given
+	cpu.A = 0xCC;
+	cpu.Flag.V = false;
+	cpu.Flag.N = true;
+	memory[0xFFFC] = CPU::BIT_ZP;
+	memory[0xFFFD] = 0x42;
+	memory[0x0042] = 0x40;
+	constexpr s32 EXPECTED_CYCLES = 3;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.A, 0xCC);
+	
+	
+	EXPECT_FALSE(cpu.Flag.Z);
+	
+	EXPECT_FALSE(cpu.Flag.N);
+	EXPECT_TRUE(cpu.Flag.V);
+};
+
+TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPageZero ) {
+	using namespace mos6502;
+
+	// given
+	cpu.A = 0xCC;
+	cpu.Flag.V = cpu.Flag.N = true;
+	memory[0xFFFC] = CPU::BIT_ZP;
+	memory[0xFFFD] = 0x47;
+	memory[0x0047] = 0x33;
+	constexpr s32 EXPECTED_CYCLES = 3;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.A, 0xCC);
+	
+	
+	EXPECT_TRUE(cpu.Flag.Z);
+	
+	EXPECT_FALSE(cpu.Flag.N);
+	EXPECT_FALSE(cpu.Flag.V);
+};
+
+TEST_F( MOS6502LogicalOperationsTests, TestBitAbsolute ) {
+	using namespace mos6502;
+
+	// given
+	cpu.A = 0xCC;
+	cpu.Flag.N = cpu.Flag.V = false;
+	memory[0xFFFC] = CPU::BIT_ABS;
+	memory[0xFFFD] = 0x9B;
+	memory[0xFFFE] = 0x47;
+	memory[0x479B] = 0xCC;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.A, 0xCC);
+	
+	
+	EXPECT_FALSE(cpu.Flag.Z);
+	
+	EXPECT_TRUE(cpu.Flag.N);
+	EXPECT_TRUE(cpu.Flag.V);
+};
+
+TEST_F( MOS6502LogicalOperationsTests, TestBitAbsoluteZero ) {
+	using namespace mos6502;
+
+	// given
+	cpu.A = 0xCC;
+	cpu.Flag.N = cpu.Flag.V = true;
+	memory[0xFFFC] = CPU::BIT_ABS;
+	memory[0xFFFD] = 0x9B;
+	memory[0xFFFE] = 0x47;
+	memory[0x479B] = 0x33;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.A, 0xCC);
+	
+	
+	EXPECT_TRUE(cpu.Flag.Z);
+	
+	EXPECT_FALSE(cpu.Flag.N);
+	EXPECT_FALSE(cpu.Flag.V);
+};
+
+TEST_F( MOS6502LogicalOperationsTests, TestBitAbsoluteZeroOverflowNonNegative ) {
+	using namespace mos6502;
+
+	// given
+	cpu.A = 0xCC;
+	cpu.Flag.N = true;
+	cpu.Flag.V = false;
+	memory[0xFFFC] = CPU::BIT_ABS;
+	memory[0xFFFD] = 0x9B;
+	memory[0xFFFE] = 0x47;
+	memory[0x479B] = 0x40;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	s32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.A, 0xCC);
+	
+	
+	EXPECT_FALSE(cpu.Flag.Z);
+	
+	EXPECT_FALSE(cpu.Flag.N);
+	EXPECT_TRUE(cpu.Flag.V);
+};
