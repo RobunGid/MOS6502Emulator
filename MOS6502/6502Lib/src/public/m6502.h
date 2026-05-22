@@ -244,6 +244,12 @@ class mos6502::CPU {
 	// Return actual number of cycles that were used
 	s32 Execute(s32 Cycles, Memory& mem);
 
+	// Load program in memory and return address where program was loaded into, or zero else
+	Word LoadProgram(const Byte* program, u32 numberOfBytes, Memory& memory);
+
+	// Print values of registers, program counter, stack pointer, flags
+	void PrintStatus() const;
+
 	// Address Mode: Zero Page
 	Word GetAddressZeroPage(s32& Cycles, const Memory& memory);
 	// Address Mode: Zero Page X

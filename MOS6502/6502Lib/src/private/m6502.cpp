@@ -489,3 +489,22 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 	const s32 NumCyclesUsed = CyclesRequested - Cycles;
 	return NumCyclesUsed;
 }
+
+mos6502::Word mos6502::CPU::LoadProgram(const Byte* program, u32 numberOfBytes, Memory& memory) { 
+	Word loadAddress = 0x00;
+	if (program && numberOfBytes > 2) {
+		u32 at = 0;
+		loadAddress = program[at] | (program[at+1] << 8);
+		at += 2;
+		for (Word i = loadAddress; i < loadAddress + numberOfBytes - 2; i++) {
+			memory[i] = program[at++];
+		};
+	}
+	return loadAddress;
+}
+
+void mos6502::CPU::PrintStatus() const {
+	printf("A = 0x%X, X = 0x%X, Y = 0x%X\n", A, X, Y); 
+	printf("PC = 0x%X, SP = 0x%X\n", PC, SP); 
+	printf("PS = %d\n", PS);
+}
