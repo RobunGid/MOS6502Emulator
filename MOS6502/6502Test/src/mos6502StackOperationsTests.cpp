@@ -11,7 +11,6 @@ class MOS6502StackOperationsTests : public testing::Test {
 		virtual void TearDown() {
 
 		}
-
 };
 
 TEST_F(MOS6502StackOperationsTests, TSXCanTransferZeroStackPointerToXRegister) {

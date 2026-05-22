@@ -141,8 +141,15 @@ class mos6502::CPU {
 		EOR_ABS_Y = 0x59,
 		EOR_IND_X = 0x41,
 		EOR_IND_Y = 0x51,
+
 		BIT_ZP = 0x24,
 		BIT_ABS = 0x2C,
+
+		// Register Transfers
+		TAX = 0xAA,
+		TAY = 0xA8,
+		TXA = 0x8A,
+		TYA = 0x98,
 
 		JSR = 0x20,
 		RTS = 0x60

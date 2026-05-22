@@ -459,6 +459,34 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				PS = (value & 0b11000000) | (PS & 0b00111111);
 			} break;
 
+			case TAX: {
+				X = A;
+				Flag.Z = X == 0;
+				Flag.N = (X & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case TAY: {
+				Y = A;
+				Flag.Z = Y == 0;
+				Flag.N = (Y & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case TXA: {
+				A = X;
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case TYA: {
+				A = Y;
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 
