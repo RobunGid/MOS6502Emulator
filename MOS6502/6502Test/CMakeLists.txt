@@ -46,7 +46,8 @@ set  (MOS6502_SOURCES
 		"src/mos6502StackOperationsTests"
 		"src/mos6502LogicalOperationsTests"
 		"src/mos6502ProgramTests"
-		"src/mos6502RegisterTransfersTests")
+		"src/mos6502RegisterTransfersTests"
+		"src/mos6502IncrementDecrementOperationsTests")
 		
 source_group("src" FILES ${MOS6502_SOURCES})
 		

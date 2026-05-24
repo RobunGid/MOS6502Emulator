@@ -487,6 +487,114 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Cycles--;
 			} break;
 
+			case INX: {
+				X++;
+				Flag.Z = X == 0;
+				Flag.N = (X & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case INY: {
+				Y++;
+				Flag.Z = Y == 0;
+				Flag.N = (Y & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case DEX: {
+				X--;
+				Flag.Z = X == 0;
+				Flag.N = (X & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case DEY: {
+				Y--;
+				Flag.Z = Y == 0;
+				Flag.N = (Y & 0b10000000) > 0;
+				Cycles--;
+			} break;
+
+			case INC_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value++;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case DEC_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value--;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case INC_ZP_X: {
+				Word address = GetAddressZeroPageX(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value++;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case DEC_ZP_X: {
+				Word address = GetAddressZeroPageX(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value--;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case INC_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value++;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case DEC_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value--;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case INC_ABS_X: {
+				Word address = GetAddressAbsoluteX_5(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value++;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
+			case DEC_ABS_X: {
+				Word address = GetAddressAbsoluteX_5(Cycles, memory);
+				Byte value = ReadByte(Cycles, address, memory);
+				value--;
+				Cycles--;
+				WriteByte(value, Cycles, address, memory);
+				Flag.Z = value == 0;
+				Flag.N = (value & 0b10000000) > 0;
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 

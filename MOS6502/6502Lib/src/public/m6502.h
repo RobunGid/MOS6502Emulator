@@ -151,6 +151,24 @@ class mos6502::CPU {
 		TXA = 0x8A,
 		TYA = 0x98,
 
+		// INC
+		INC_ZP = 0xE6,
+		INC_ZP_X = 0xF6,
+		INC_ABS = 0xEE,
+		INC_ABS_X = 0xFE,
+
+		// DEC
+		DEC_ZP = 0xC6,
+		DEC_ZP_X = 0xD6,
+		DEC_ABS = 0xCE,
+		DEC_ABS_X = 0xDE,
+
+		// Other Increment & Decrement operations
+		INX = 0xE8,
+		INY = 0xC8,
+		DEX = 0XCA,
+		DEY = 0x88,
+
 		JSR = 0x20,
 		RTS = 0x60
 		;

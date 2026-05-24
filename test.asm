@@ -1,8 +1,10 @@
 !to "test.prg", cbm
 * = $1000
-lda #$FF
+lda #$00
+sta $42
+
 start
-sta $90
-sta $8000
-eor #$CC
+inc $42
+ldx $42
+inx
 jmp start
