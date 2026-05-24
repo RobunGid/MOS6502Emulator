@@ -595,6 +595,18 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Flag.N = (value & 0b10000000) > 0;
 			} break;
 
+			case BEQ: {
+				SByte offset = static_cast<SByte>(FetchByte(Cycles, memory));
+				if (Flag.Z) {
+					if ((PC & 0xFF00) != ((PC + offset) & 0xFF00)) {
+						Cycles -= 2;
+					};
+
+					PC += offset;
+					Cycles--;
+				}
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 
@@ -642,5 +654,5 @@ mos6502::Word mos6502::CPU::LoadProgram(const Byte* program, u32 numberOfBytes, 
 void mos6502::CPU::PrintStatus() const {
 	printf("A = 0x%X, X = 0x%X, Y = 0x%X\n", A, X, Y); 
 	printf("PC = 0x%X, SP = 0x%X\n", PC, SP); 
-	printf("PS = %d\n", PS);
+	printf("PS = %d\n", PS);;
 }

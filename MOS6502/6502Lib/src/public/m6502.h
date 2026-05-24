@@ -4,6 +4,7 @@
 #include <cstdint>
 
 namespace mos6502 {
+	using SByte = std::int8_t;
 	using Byte = std::uint8_t;
 	using Word = std::uint16_t;
 	using u32 = std::uint32_t;
@@ -168,6 +169,10 @@ class mos6502::CPU {
 		INY = 0xC8,
 		DEX = 0XCA,
 		DEY = 0x88,
+
+		// Branch
+
+		BEQ = 0xF0,
 
 		JSR = 0x20,
 		RTS = 0x60
