@@ -16,7 +16,7 @@ class MOS6502StackOperationsTests : public testing::Test {
 TEST_F(MOS6502StackOperationsTests, TSXCanTransferZeroStackPointerToXRegister) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.Flag.Z = cpu.Flag.N = true;
 	cpu.X = 0x00;
 	cpu.SP = 0x01;
@@ -37,7 +37,7 @@ TEST_F(MOS6502StackOperationsTests, TSXCanTransferZeroStackPointerToXRegister) {
 TEST_F(MOS6502StackOperationsTests, TSXCanTransferZeroStackPointerToXRegisterSettingFlags) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.Flag.Z = cpu.Flag.N = true;
 	cpu.X = 0x00;
 	cpu.SP = 0x00;
@@ -58,7 +58,7 @@ TEST_F(MOS6502StackOperationsTests, TSXCanTransferZeroStackPointerToXRegisterSet
 TEST_F(MOS6502StackOperationsTests, TSXCanTransferNegativeStackPointerToXRegisterSettingFlags) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.Flag.Z = cpu.Flag.N = true;
 	cpu.X = 0x00;
 	cpu.SP = 0x80;
@@ -79,7 +79,7 @@ TEST_F(MOS6502StackOperationsTests, TSXCanTransferNegativeStackPointerToXRegiste
 TEST_F(MOS6502StackOperationsTests, TXSCanTransferXRegisterToStackPointer) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.X = 0x9B;
 	cpu.SP = 0x00;
 	memory[0xFF00] = CPU::TXS;
@@ -98,7 +98,7 @@ TEST_F(MOS6502StackOperationsTests, TXSCanTransferXRegisterToStackPointer) {
 TEST_F(MOS6502StackOperationsTests, PHACanPushARegisterOntoStack) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.A = 0x42;
 	memory[0xFF00] = CPU::PHA;
 	CPU cpu_copy = cpu;
@@ -109,14 +109,14 @@ TEST_F(MOS6502StackOperationsTests, PHACanPushARegisterOntoStack) {
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ( memory[cpu.SPToAddress()+1], 0x42);
+	EXPECT_EQ(memory[cpu.SPToAddress()+1], 0x42);
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 }
 
 TEST_F(MOS6502StackOperationsTests, PHPCanPushProcessorStatusRegisterOntoStack) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.PS = 0xC;
 	memory[0xFF00] = CPU::PHP;
 	CPU cpu_copy = cpu;
@@ -127,7 +127,7 @@ TEST_F(MOS6502StackOperationsTests, PHPCanPushProcessorStatusRegisterOntoStack) 
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ( memory[cpu.SPToAddress()+1], 0xC);
+	EXPECT_EQ(memory[cpu.SPToAddress()+1], 0xC);
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 	EXPECT_EQ(cpu.SP, 0xFE);
 }
@@ -135,7 +135,7 @@ TEST_F(MOS6502StackOperationsTests, PHPCanPushProcessorStatusRegisterOntoStack) 
 TEST_F(MOS6502StackOperationsTests, PLACanPullValueFromStackIntoARegister) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.A = 0x0;
 	cpu.SP = 0xFE;
 	memory[0xFF00] = CPU::PLA;
@@ -147,14 +147,14 @@ TEST_F(MOS6502StackOperationsTests, PLACanPullValueFromStackIntoARegister) {
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ( cpu.A, 0x67);
+	EXPECT_EQ(cpu.A, 0x67);
 	EXPECT_EQ(cpu.SP, 0xFF);
 }
 
 TEST_F(MOS6502StackOperationsTests, PLACanPullZeroValueFromStackIntoARegister) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.Flag.Z = false;
 	cpu.Flag.N = true;
 	cpu.A = 0x42;
@@ -168,16 +168,16 @@ TEST_F(MOS6502StackOperationsTests, PLACanPullZeroValueFromStackIntoARegister) {
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ( cpu.A, 0x00);
-	EXPECT_TRUE( cpu.Flag.Z);
-	EXPECT_FALSE( cpu.Flag.N);
+	EXPECT_EQ(cpu.A, 0x00);
+	EXPECT_TRUE(cpu.Flag.Z);
+	EXPECT_FALSE(cpu.Flag.N);
 	EXPECT_EQ(cpu.SP, 0xFF);
 }
 
 TEST_F(MOS6502StackOperationsTests, PLACanPullNegativeValueFromStackIntoARegister) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.Flag.N = false;
 	cpu.Flag.Z = true;
 	cpu.A = 0x42;
@@ -191,16 +191,16 @@ TEST_F(MOS6502StackOperationsTests, PLACanPullNegativeValueFromStackIntoARegiste
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ( cpu.A, 0x80);
-	EXPECT_TRUE( cpu.Flag.N);
-	EXPECT_FALSE( cpu.Flag.Z);
+	EXPECT_EQ(cpu.A, 0x80);
+	EXPECT_TRUE(cpu.Flag.N);
+	EXPECT_FALSE(cpu.Flag.Z);
 	EXPECT_EQ(cpu.SP, 0xFF);
 }
 
 TEST_F(MOS6502StackOperationsTests, PLPCanPullValueFromStackIntoProcessorStatusRegister) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	cpu.PS = 0x00;
 	cpu.SP = 0xFE;
 	memory[0xFF00] = CPU::PLP;
@@ -212,5 +212,5 @@ TEST_F(MOS6502StackOperationsTests, PLPCanPullValueFromStackIntoProcessorStatusR
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ( cpu.PS, 0x67);
+	EXPECT_EQ(cpu.PS, 0x67);
 }

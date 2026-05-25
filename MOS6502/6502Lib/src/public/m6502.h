@@ -171,8 +171,14 @@ class mos6502::CPU {
 		DEY = 0x88,
 
 		// Branch
-
 		BEQ = 0xF0,
+		BNE = 0xD0,
+		BCS = 0xB0,
+		BCC = 0x90,
+		BMI = 0x30,
+		BPL = 0x10,
+		BVC = 0x50,
+		BVS = 0x70,
 
 		JSR = 0x20,
 		RTS = 0x60
@@ -186,12 +192,18 @@ class mos6502::CPU {
 		A = X = Y = 0;
 		memory.Init();
 	}
-    // Read byte from memory at Program Counter address and increment PC
+
+    // Read unsigned byte from memory at Program Counter address and increment PC
 	Byte FetchByte(s32& Cycles, const Memory& memory) {
 		Byte data = memory[PC];
 		PC++;
 		Cycles--;
 		return data;
+	}
+	
+    // Read signed byte from memory at Program Counter address and increment PC
+	SByte FetchSByte(s32& Cycles, const Memory& memory) {
+		return FetchByte(Cycles, memory);
 	}
 
 	// Read byte at given any Address

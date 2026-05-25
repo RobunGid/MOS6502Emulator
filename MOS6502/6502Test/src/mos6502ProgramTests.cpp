@@ -33,7 +33,7 @@ class MOS6502ProgramTests : public testing::Test {
 		}
 };
 
-TEST_F( MOS6502ProgramTests, TestLoadProgramIntoMemory ) {
+TEST_F(MOS6502ProgramTests, TestLoadProgramIntoMemory) {
 	using namespace mos6502;
 
 	// when
@@ -50,7 +50,7 @@ TEST_F( MOS6502ProgramTests, TestLoadProgramIntoMemory ) {
 	EXPECT_EQ(memory[0x100B], 0x10);
 };
 
-TEST_F( MOS6502ProgramTests, TestLoadAndExecuteProgram ) {
+TEST_F(MOS6502ProgramTests, TestLoadAndExecuteProgram) {
 	using namespace mos6502;
 
 	// when

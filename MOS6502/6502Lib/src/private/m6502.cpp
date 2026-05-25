@@ -117,6 +117,19 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 		Flag.N = (A & 0b10000000) > 0;
 	};
 
+	// Conditional branching 
+	auto branchIf = [&Cycles, &memory, this](bool test, bool expected) {
+		SByte offset = FetchSByte(Cycles, memory);
+		if (test == expected) {
+			if ((PC & 0xFF00) != ((PC + offset) & 0xFF00)) {
+				Cycles -= 2;
+			};
+
+			PC += offset;
+			Cycles--;
+		};
+	};
+
 	while (Cycles > 0) {
 		Byte instruction = FetchByte(Cycles, memory);
 		switch (instruction) {
@@ -596,15 +609,35 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 			} break;
 
 			case BEQ: {
-				SByte offset = static_cast<SByte>(FetchByte(Cycles, memory));
-				if (Flag.Z) {
-					if ((PC & 0xFF00) != ((PC + offset) & 0xFF00)) {
-						Cycles -= 2;
-					};
+				branchIf(Flag.Z, true);
+			} break;
 
-					PC += offset;
-					Cycles--;
-				}
+			case BNE: {
+				branchIf(Flag.Z, false);
+			} break;
+
+			case BCS: {
+				branchIf(Flag.C, true);
+			} break;
+
+			case BCC: {
+				branchIf(Flag.C, false);
+			} break;
+
+			case BMI: {
+				branchIf(Flag.N, true);
+			} break;
+
+			case BPL: {
+				branchIf(Flag.N, false);
+			} break;
+
+			case BVC: {
+				branchIf(Flag.V, false);
+			} break;
+
+			case BVS: {
+				branchIf(Flag.V, true);
 			} break;
 
 			/*

@@ -30,7 +30,7 @@ static void VerifyUnmodifiedFlagFromLoadRegister(const mos6502::CPU& cpu, const 
 	EXPECT_EQ(cpu.Flag.V, cpu_copy.Flag.V);
 }
 
-TEST_F( MOS6502LoadRegisterTests, TheCPUDoesNothingWhenExecutesZeroCycles ) {
+TEST_F(MOS6502LoadRegisterTests, TheCPUDoesNothingWhenExecutesZeroCycles) {
 	using namespace mos6502;
 	
 	// given
@@ -43,7 +43,7 @@ TEST_F( MOS6502LoadRegisterTests, TheCPUDoesNothingWhenExecutesZeroCycles ) {
 	EXPECT_EQ(CyclesUsed, 0);
 }
 
-TEST_F( MOS6502LoadRegisterTests, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstructions ) {
+TEST_F(MOS6502LoadRegisterTests, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByInstructions) {
 	using namespace mos6502;
 	
 	// given
@@ -288,23 +288,23 @@ void MOS6502LoadRegisterTests::TestLoadRegisterAbsoluteYWithPageCrossing(
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAImmeddiateCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAImmeddiateCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 	TestLoadRegisterImmediate(CPU::LDA_IM, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDXImmeddiateCanLoadAValueIntoTheXRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDXImmeddiateCanLoadAValueIntoTheXRegister) {
 	using namespace mos6502;
 	TestLoadRegisterImmediate(CPU::LDX_IM, &CPU::X);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDYImmeddiateCanLoadAValueIntoTheYRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDYImmeddiateCanLoadAValueIntoTheYRegister) {
 	using namespace mos6502;
 	TestLoadRegisterImmediate(CPU::LDY_IM, &CPU::Y);
 }
 
 
-TEST_F( MOS6502LoadRegisterTests, LDAImmeddiateCanAffectZeroFlag ) {
+TEST_F(MOS6502LoadRegisterTests, LDAImmeddiateCanAffectZeroFlag) {
 	using namespace mos6502;
 	
 	// given
@@ -322,38 +322,38 @@ TEST_F( MOS6502LoadRegisterTests, LDAImmeddiateCanAffectZeroFlag ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAZeroPageCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAZeroPageCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 	TestLoadRegisterZeroPage(CPU::LDA_ZP, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDXZeroPageCanLoadAValueIntoTheXRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDXZeroPageCanLoadAValueIntoTheXRegister) {
 	using namespace mos6502;
 	TestLoadRegisterZeroPage(CPU::LDX_ZP, &CPU::X);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDYZeroPageCanLoadAValueIntoTheYRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDYZeroPageCanLoadAValueIntoTheYRegister) {
 	using namespace mos6502;
 	TestLoadRegisterZeroPage(CPU::LDY_ZP, &CPU::Y);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAZeroPageXCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAZeroPageXCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 	TestLoadRegisterZeroPageX(CPU::LDA_ZP_X, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDXZeroPageYCanLoadAValueIntoTheXRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDXZeroPageYCanLoadAValueIntoTheXRegister) {
 	using namespace mos6502;
 	TestLoadRegisterZeroPageY(CPU::LDX_ZP_Y, &CPU::X);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDYZeroPageXCanLoadAValueIntoTheYRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDYZeroPageXCanLoadAValueIntoTheYRegister) {
 	using namespace mos6502;
 	TestLoadRegisterZeroPageX(CPU::LDY_ZP_X, &CPU::Y);
 }
 
 
-TEST_F( MOS6502LoadRegisterTests, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWraps ) {
+TEST_F(MOS6502LoadRegisterTests, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenItWraps) {
 	using namespace mos6502;
 	
 	// given
@@ -374,62 +374,62 @@ TEST_F( MOS6502LoadRegisterTests, LDAZeroPageXCanLoadAValueIntoTheARegisterWhenI
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAAbsoluteCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAAbsoluteCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsolute(CPU::LDA_ABS, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDXAbsoluteCanLoadAValueIntoTheXRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDXAbsoluteCanLoadAValueIntoTheXRegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsolute(CPU::LDX_ABS, &CPU::X);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDYAbsoluteCanLoadAValueIntoTheYRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDYAbsoluteCanLoadAValueIntoTheYRegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsolute(CPU::LDY_ABS, &CPU::Y);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAAbsoluteXCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAAbsoluteXCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteX(CPU::LDA_ABS_X, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDYAbsoluteXCanLoadAValueIntoTheYRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDYAbsoluteXCanLoadAValueIntoTheYRegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteX(CPU::LDY_ABS_X, &CPU::Y);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithPageCrossing ) {
+TEST_F(MOS6502LoadRegisterTests, LDAAbsoluteXCanLoadAValueIntoTheARegisterWithPageCrossing) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteXWithPageCrossing(CPU::LDA_ABS_X, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDYAbsoluteXCanLoadAValueIntoTheYRegisterWithPageCrossing ) {
+TEST_F(MOS6502LoadRegisterTests, LDYAbsoluteXCanLoadAValueIntoTheYRegisterWithPageCrossing) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteXWithPageCrossing(CPU::LDY_ABS_X, &CPU::Y);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAAbsoluteYCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAAbsoluteYCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteY(CPU::LDA_ABS_Y, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDXAbsoluteYCanLoadAValueIntoTheXRegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDXAbsoluteYCanLoadAValueIntoTheXRegister) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteY(CPU::LDX_ABS_Y, &CPU::X);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAAbsoluteYCanLoadAValueIntoTheARegisterWithPageCrossing ) {
+TEST_F(MOS6502LoadRegisterTests, LDAAbsoluteYCanLoadAValueIntoTheARegisterWithPageCrossing) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteYWithPageCrossing(CPU::LDA_ABS_Y, &CPU::A);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDXAbsoluteYCanLoadAValueIntoTheXRegisterWithPageCrossing ) {
+TEST_F(MOS6502LoadRegisterTests, LDXAbsoluteYCanLoadAValueIntoTheXRegisterWithPageCrossing) {
 	using namespace mos6502;
 	TestLoadRegisterAbsoluteYWithPageCrossing(CPU::LDX_ABS_Y, &CPU::X);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAIndirectXCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAIndirectXCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 
 	// given
@@ -453,7 +453,7 @@ TEST_F( MOS6502LoadRegisterTests, LDAIndirectXCanLoadAValueIntoTheARegister ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegister ) {
+TEST_F(MOS6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegister) {
 	using namespace mos6502;
 
 	// given
@@ -477,7 +477,7 @@ TEST_F( MOS6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegister ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegisterWhenCrossesPageBoundary ) {
+TEST_F(MOS6502LoadRegisterTests, LDAIndirectYCanLoadAValueIntoTheARegisterWhenCrossesPageBoundary) {
 	using namespace mos6502;
 
 	// given

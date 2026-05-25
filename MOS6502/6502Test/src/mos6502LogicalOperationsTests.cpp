@@ -577,172 +577,172 @@ void MOS6502LogicalOperationsTests::TestLogicalOperationOnARegisterIndirectYWith
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 };
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterImmediate ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterImmediate) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterImmediate(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterImmediate ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterImmediate) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterImmediate(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterImmediate ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterImmediate) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterImmediate(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterZeroPage ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterZeroPage) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterZeroPage(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterZeroPage ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterZeroPage) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterZeroPage(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterZeroPage ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterZeroPage) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterZeroPage(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterZeroPageX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterZeroPageX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterZeroPageX(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterZeroPageX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterZeroPageX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterZeroPageX(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterZeroPageX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterZeroPageX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterZeroPageX(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsolute ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsolute) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsolute(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsolute ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsolute) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsolute(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsolute ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsolute) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsolute(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteX(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteX(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteX(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteXWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteXWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteXWithPageCrossing(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteXWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteXWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteXWithPageCrossing(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteXWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteXWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteXWithPageCrossing(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteY ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteY) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteY(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteY ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteY) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteY(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteY ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteY) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteY(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteYWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterAbsoluteYWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteYWithPageCrossing(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteYWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterAbsoluteYWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteYWithPageCrossing(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteYWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterAbsoluteYWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterAbsoluteYWithPageCrossing(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterIndirectX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterIndirectX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectX(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterIndirectX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterIndirectX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectX(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirectX ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirectX) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectX(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterIndirectY ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterIndirectY) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectY(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterIndirectY ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterIndirectY) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectY(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirectY ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirectY) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectY(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterIndirectYWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationANDOnARegisterIndirectYWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectYWithPageCrossing(LogicalOperations::And);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterIndirectYWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationORAOnARegisterIndirectYWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectYWithPageCrossing(LogicalOperations::Or);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirectYWithPageCrossing ) {
+TEST_F(MOS6502LogicalOperationsTests, TestLogicalOperationEOROnARegisterIndirectYWithPageCrossing) {
 	using namespace mos6502;
 	TestLogicalOperationOnARegisterIndirectYWithPageCrossing(LogicalOperations::Eor);
 }
 
-TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPage ) {
+TEST_F(MOS6502LogicalOperationsTests, TestBitZeroPage) {
 	using namespace mos6502;
 
 	// given
@@ -767,7 +767,7 @@ TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPage ) {
 	EXPECT_TRUE(cpu.Flag.V);
 };
 
-TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPageOverflowNonNegative ) {
+TEST_F(MOS6502LogicalOperationsTests, TestBitZeroPageOverflowNonNegative) {
 	using namespace mos6502;
 
 	// given
@@ -793,7 +793,7 @@ TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPageOverflowNonNegative ) {
 	EXPECT_TRUE(cpu.Flag.V);
 };
 
-TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPageZero ) {
+TEST_F(MOS6502LogicalOperationsTests, TestBitZeroPageZero) {
 	using namespace mos6502;
 
 	// given
@@ -818,7 +818,7 @@ TEST_F( MOS6502LogicalOperationsTests, TestBitZeroPageZero ) {
 	EXPECT_FALSE(cpu.Flag.V);
 };
 
-TEST_F( MOS6502LogicalOperationsTests, TestBitAbsolute ) {
+TEST_F(MOS6502LogicalOperationsTests, TestBitAbsolute) {
 	using namespace mos6502;
 
 	// given
@@ -844,7 +844,7 @@ TEST_F( MOS6502LogicalOperationsTests, TestBitAbsolute ) {
 	EXPECT_TRUE(cpu.Flag.V);
 };
 
-TEST_F( MOS6502LogicalOperationsTests, TestBitAbsoluteZero ) {
+TEST_F(MOS6502LogicalOperationsTests, TestBitAbsoluteZero) {
 	using namespace mos6502;
 
 	// given
@@ -870,7 +870,7 @@ TEST_F( MOS6502LogicalOperationsTests, TestBitAbsoluteZero ) {
 	EXPECT_FALSE(cpu.Flag.V);
 };
 
-TEST_F( MOS6502LogicalOperationsTests, TestBitAbsoluteZeroOverflowNonNegative ) {
+TEST_F(MOS6502LogicalOperationsTests, TestBitAbsoluteZeroOverflowNonNegative) {
 	using namespace mos6502;
 
 	// given

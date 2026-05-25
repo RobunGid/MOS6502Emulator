@@ -14,7 +14,7 @@ class MOS6502BranchTests : public testing::Test {
 
 };
 
-TEST_F( MOS6502BranchTests, BEQCanBranchForwardWhenZeroIsSet ) {
+TEST_F(MOS6502BranchTests, BEQCanBranchForwardWhenZeroIsSet) {
 	using namespace mos6502;
 
 	// given
@@ -33,7 +33,140 @@ TEST_F( MOS6502BranchTests, BEQCanBranchForwardWhenZeroIsSet ) {
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 }
 
-TEST_F( MOS6502BranchTests, BEQDoesNotBranchForwardWhenZeroIsUnset ) {
+TEST_F(MOS6502BranchTests, BNECanBranchForwardWhenZeroIsUnset) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.Z = false;
+	memory[0xFFFC] = CPU::BNE;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BCSCanBranchForwardWhenCarryFlagIsSet) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.C = true;
+	memory[0xFFFC] = CPU::BCS;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BCCCanBranchForwardWhenCarryIsUnset) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.C = false;
+	memory[0xFFFC] = CPU::BCC;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BMICanBranchForwardWhenNegativeFlagIsSet) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.N = true;
+	memory[0xFFFC] = CPU::BMI;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BPLCanBranchForwardWhenNegativeFlagIsUnset) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.N = false;
+	memory[0xFFFC] = CPU::BPL;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BVCCanBranchForwardWhenOverflowFlagIsUnset) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.V = false;
+	memory[0xFFFC] = CPU::BVC;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BVSCanBranchForwardWhenOverflowFlagIsSet) {
+	using namespace mos6502;
+
+	// given
+	cpu.Flag.V = true;
+	memory[0xFFFC] = CPU::BVS;
+	memory[0xFFFD] = 0x01;
+	constexpr s32 EXPECTED_CYCLES = 3;
+	CPU cpu_copy = cpu;
+
+	// when
+	s32 cyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PC, 0xFFFF);
+	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+};
+
+TEST_F(MOS6502BranchTests, BEQDoesNotBranchForwardWhenZeroIsUnset) {
 	using namespace mos6502;
 
 	// given
@@ -52,7 +185,7 @@ TEST_F( MOS6502BranchTests, BEQDoesNotBranchForwardWhenZeroIsUnset ) {
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 }
 
-TEST_F( MOS6502BranchTests, BEQCanBranchForwardToNewPageWhenZeroIsSet ) {
+TEST_F(MOS6502BranchTests, BEQCanBranchForwardToNewPageWhenZeroIsSet) {
 	using namespace mos6502;
 
 	// given
@@ -72,7 +205,7 @@ TEST_F( MOS6502BranchTests, BEQCanBranchForwardToNewPageWhenZeroIsSet ) {
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 }
 
-TEST_F( MOS6502BranchTests, BEQCanBranchBackwardWhenZeroIsSet ) {
+TEST_F(MOS6502BranchTests, BEQCanBranchBackwardWhenZeroIsSet) {
 	using namespace mos6502;
 
 	// given
@@ -91,7 +224,7 @@ TEST_F( MOS6502BranchTests, BEQCanBranchBackwardWhenZeroIsSet ) {
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 }
 
-TEST_F( MOS6502BranchTests, BEQDoesNotBranchBackwardWhenZeroIsUnset ) {
+TEST_F(MOS6502BranchTests, BEQDoesNotBranchBackwardWhenZeroIsUnset) {
 	using namespace mos6502;
 
 	// given
@@ -110,7 +243,7 @@ TEST_F( MOS6502BranchTests, BEQDoesNotBranchBackwardWhenZeroIsUnset ) {
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
 }
 
-TEST_F( MOS6502BranchTests, BEQCanBranchBackwardToNewPageWhenZeroIsSet ) {
+TEST_F(MOS6502BranchTests, BEQCanBranchBackwardToNewPageWhenZeroIsSet) {
 	using namespace mos6502;
 
 	// given
@@ -128,9 +261,9 @@ TEST_F( MOS6502BranchTests, BEQCanBranchBackwardToNewPageWhenZeroIsSet ) {
 	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
 	EXPECT_EQ(cpu.PC, 0xFEFF);
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
-}
+};
 
-TEST_F( MOS6502BranchTests, TestLoadAndExecuteProgramInfiniteLoop ) {
+TEST_F(MOS6502BranchTests, TestLoadAndExecuteProgramInfiniteLoop) {
 	using namespace mos6502;
 
 	// given

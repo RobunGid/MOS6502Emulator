@@ -17,7 +17,7 @@ class MOS6502JumpsAndCallsTests : public testing::Test {
 TEST_F(MOS6502JumpsAndCallsTests, JSRCanJumpToASubroutineAndJumpBack) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	memory[0xFF00] = CPU::JSR;
 	memory[0xFF01] = 0x00;
 	memory[0xFF02] = 0x80;
@@ -39,7 +39,7 @@ TEST_F(MOS6502JumpsAndCallsTests, JSRCanJumpToASubroutineAndJumpBack) {
 TEST_F(MOS6502JumpsAndCallsTests, JSRNotAffectProcessorStatus) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	memory[0xFF00] = CPU::JSR;
 	memory[0xFF01] = 0x00;
 	memory[0xFF02] = 0x80;
@@ -59,7 +59,7 @@ TEST_F(MOS6502JumpsAndCallsTests, JSRNotAffectProcessorStatus) {
 TEST_F(MOS6502JumpsAndCallsTests, RTSNotAffectProcessorStatus) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	memory[0xFF00] = CPU::JSR;
 	memory[0xFF01] = 0x00;
 	memory[0xFF02] = 0x80;
@@ -79,7 +79,7 @@ TEST_F(MOS6502JumpsAndCallsTests, RTSNotAffectProcessorStatus) {
 TEST_F(MOS6502JumpsAndCallsTests, JMPAbsoluteCanJumpToNewProgramLocation) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	memory[0xFF00] = CPU::JMP_ABS;
 	memory[0xFF01] = 0x00;
 	memory[0xFF02] = 0x80;
@@ -99,7 +99,7 @@ TEST_F(MOS6502JumpsAndCallsTests, JMPAbsoluteCanJumpToNewProgramLocation) {
 TEST_F(MOS6502JumpsAndCallsTests, JMPIndirectCanJumpToNewProgramLocation) {
 	using namespace mos6502;
 	// given
-	cpu.Reset( 0xFF00, memory );
+	cpu.Reset(0xFF00, memory);
 	memory[0xFF00] = CPU::JMP_IND ;
 	memory[0xFF01] = 0x00;
 	memory[0xFF02] = 0x80;

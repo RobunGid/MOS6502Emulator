@@ -22,7 +22,7 @@ static void VerifyUnmodifiedFlagFromLoadRegister(const mos6502::CPU& cpu, const 
 	EXPECT_EQ(cpu.Flag.V, cpu_copy.Flag.V);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INXCanIncrementXValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INXCanIncrementXValue) {
 	using namespace mos6502;
 
 	// given
@@ -44,7 +44,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INXCanIncrementXValue ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INXCanIncrementXToZeroValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INXCanIncrementXToZeroValue) {
 	using namespace mos6502;
 
 	// given
@@ -66,7 +66,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INXCanIncrementXToZeroValue ) 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INXCanIncrementXToNegativeValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INXCanIncrementXToNegativeValue) {
 	using namespace mos6502;
 
 	// given
@@ -88,7 +88,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INXCanIncrementXToNegativeValu
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INYCanIncrementYValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INYCanIncrementYValue) {
 	using namespace mos6502;
 
 	// given
@@ -110,7 +110,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INYCanIncrementYValue ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INYCanIncrementYToZeroValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INYCanIncrementYToZeroValue) {
 	using namespace mos6502;
 
 	// given
@@ -132,7 +132,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INYCanIncrementYToZeroValue ) 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INYCanIncrementYToNegativeValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INYCanIncrementYToNegativeValue) {
 	using namespace mos6502;
 
 	// given
@@ -154,7 +154,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INYCanIncrementYToNegativeValu
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXValue) {
 	using namespace mos6502;
 
 	// given
@@ -176,7 +176,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXValue ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXToZeroValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXToZeroValue) {
 	using namespace mos6502;
 
 	// given
@@ -198,7 +198,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXToZeroValue ) 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXToNegativeValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXToNegativeValue) {
 	using namespace mos6502;
 
 	// given
@@ -220,7 +220,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DEXCanDecrementXToNegativeValu
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DEYCanDecrementYValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DEYCanDecrementYValue) {
 	using namespace mos6502;
 
 	// given
@@ -242,7 +242,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DEYCanDecrementYValue ) {
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DEYCanDecrementYToZeroValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DEYCanDecrementYToZeroValue) {
 	using namespace mos6502;
 
 	// given
@@ -264,7 +264,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DEYCanDecrementYToZeroValue ) 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DEYCanIncrementYToNegativeValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DEYCanIncrementYToNegativeValue) {
 	using namespace mos6502;
 
 	// given
@@ -286,7 +286,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DEYCanIncrementYToNegativeValu
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INCZeroPageCanIncrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INCZeroPageCanIncrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -309,7 +309,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INCZeroPageCanIncrementValue )
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DECZeroPageCanDecrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DECZeroPageCanDecrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -332,7 +332,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DECZeroPageCanDecrementValue )
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INCZeroPageXCanIncrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INCZeroPageXCanIncrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -356,7 +356,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INCZeroPageXCanIncrementValue 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DECZeroPageXCanDecrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DECZeroPageXCanDecrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -380,7 +380,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DECZeroPageXCanDecrementValue 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INCAbsoluteCanIncrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INCAbsoluteCanIncrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -404,7 +404,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INCAbsoluteCanIncrementValue )
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DECAbsoluteCanDecrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DECAbsoluteCanDecrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -428,7 +428,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DECAbsoluteCanDecrementValue )
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, INCAbsoluteXCanIncrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, INCAbsoluteXCanIncrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -453,7 +453,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, INCAbsoluteXCanIncrementValue 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, DECAbsoluteXCanDecrementValue ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, DECAbsoluteXCanDecrementValue) {
 	using namespace mos6502;
 
 	// given
@@ -478,7 +478,7 @@ TEST_F( MOS6502IncrementDecrementOperationsTests, DECAbsoluteXCanDecrementValue 
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 }
 
-TEST_F( MOS6502IncrementDecrementOperationsTests, TestLoadAndExecuteProgramIncrementingMemory ) {
+TEST_F(MOS6502IncrementDecrementOperationsTests, TestLoadAndExecuteProgramIncrementingMemory) {
 	using namespace mos6502;
 
 	// when
