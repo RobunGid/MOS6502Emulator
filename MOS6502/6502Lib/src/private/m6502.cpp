@@ -640,6 +640,45 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				branchIf(Flag.V, true);
 			} break;
 
+			case CLC: {
+				Flag.C = false;
+				Cycles--;
+			} break;
+
+			case SEC: {
+				Flag.C = true;
+				Cycles--;
+			} break;
+
+			case CLD: {
+				Flag.D = false;
+				Cycles--;
+			} break;
+
+			case SED: {
+				Flag.D = true;
+				Cycles--;
+			} break;
+
+			case CLI: {
+				Flag.I = false;
+				Cycles--;
+			} break;
+
+			case SEI: {
+				Flag.I = true;
+				Cycles--;
+			} break;
+
+			case CLV: {
+				Flag.V = false;
+				Cycles--;
+			} break;
+
+			case NOP: {
+				Cycles--;
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 

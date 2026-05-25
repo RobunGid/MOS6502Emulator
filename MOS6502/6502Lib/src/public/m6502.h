@@ -170,7 +170,7 @@ class mos6502::CPU {
 		DEX = 0XCA,
 		DEY = 0x88,
 
-		// Branch
+		// Branching
 		BEQ = 0xF0,
 		BNE = 0xD0,
 		BCS = 0xB0,
@@ -179,6 +179,18 @@ class mos6502::CPU {
 		BPL = 0x10,
 		BVC = 0x50,
 		BVS = 0x70,
+
+		// Status flag changes
+		CLC = 0x18,
+		CLD = 0xD8,
+		CLI = 0x58,
+		CLV = 0xB8,
+		SEC = 0x38,
+		SED = 0xF8,
+		SEI = 0x78,
+
+		// System Functions & Other
+		NOP = 0xEA,
 
 		JSR = 0x20,
 		RTS = 0x60
