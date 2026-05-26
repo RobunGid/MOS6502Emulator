@@ -192,6 +192,16 @@ class mos6502::CPU {
 		// System Functions & Other
 		NOP = 0xEA,
 
+		// ADC
+		ADC_IM = 0x69,
+		ADC_ZP = 0x65,
+		ADC_ZP_X = 0x75,
+		ADC_ABS = 0x6D,
+		ADC_ABS_X = 0x7D,
+		ADC_ABS_Y = 0x79,
+		ADC_IND_X = 0x61,
+		ADC_IND_Y = 0x71,
+
 		JSR = 0x20,
 		RTS = 0x60
 		;

@@ -679,6 +679,18 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Cycles--;
 			} break;
 
+			case ADC_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				Byte beforeA = A;
+				A += operand;
+				A += Flag.C;
+				Flag.Z = A == 0;
+				Flag.N = (A & 0b10000000) > 0;
+				Flag.C = (beforeA + Flag.C + operand) > 0xFF;
+				Flag.V = ((beforeA ^ A) & (operand ^ A) & 0b10000000) != 0;
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 
