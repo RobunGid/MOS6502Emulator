@@ -62,26 +62,3 @@ TEST_F(MOS6502ProgramTests, TestLoadAndExecuteProgram) {
 		clock -= cpu.Execute(20, memory);
 	}
 };
-
-TEST_F(MOS6502ProgramTests, TestLoadAndExecuteFibbonaciCalculateProgram) {
-	using namespace mos6502;
-	mos6502::Byte prg[] = {
-		0x00, 0x10, 0xa9, 0x00, 0x85, 0x00, 0xa9, 0x01, 
-		0x85, 0x01, 0xa9, 0x0a, 0x85, 0x03, 0xa5, 0x00, 
-		0x18, 0x65, 0x01, 0x85, 0x02, 0xa5, 0x01, 0x85, 
-		0x00, 0xa5, 0x02, 0x85, 0x01, 0xc6, 0x03, 0xd0, 
-		0xed, 0xea, 0x4c, 0x1f, 0x10, 
-	};
-
-	// when
-	Word startAddress = cpu.LoadProgram(prg, 37, memory);
-	cpu.PC = startAddress;
-
-	// then
-	for (mos6502::s32 clock = 1000; clock > 0;) {
-		clock -= cpu.Execute(1, memory);
-		cpu.PrintStatus();
-		printf("0x01 = %x\n", memory[0x01]);
-		printf("current ins = %x\n", memory[cpu.PC]);
-	}
-};

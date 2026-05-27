@@ -130,6 +130,17 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 		};
 	};
 
+	// Apply add with carry to A register with operand from given address
+	auto applyADC = [&Cycles, &memory, this] (Byte operand) {
+		Byte beforeA = A;
+		A += operand;
+		A += Flag.C;
+		Flag.Z = A == 0;
+		Flag.N = (A & 0b10000000) > 0;
+		Flag.C = (beforeA + Flag.C + operand) > 0xFF;
+		Flag.V = ((beforeA ^ A) & (operand ^ A) & 0b10000000) != 0;
+	};
+
 	while (Cycles > 0) {
 		Byte instruction = FetchByte(Cycles, memory);
 		switch (instruction) {
@@ -679,16 +690,51 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Cycles--;
 			} break;
 
+			case ADC_IM: {
+				Byte operand = FetchByte(Cycles, memory);
+				applyADC(operand);
+			} break;
+
+			case ADC_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applyADC(operand);
+			} break;
+
+			case ADC_ZP_X: {
+				Word address = GetAddressZeroPageX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applyADC(operand);
+			} break;
+			
 			case ADC_ABS: {
 				Word address = GetAddressAbsolute(Cycles, memory);
 				Byte operand = ReadByte(Cycles, address, memory);
-				Byte beforeA = A;
-				A += operand;
-				A += Flag.C;
-				Flag.Z = A == 0;
-				Flag.N = (A & 0b10000000) > 0;
-				Flag.C = (beforeA + Flag.C + operand) > 0xFF;
-				Flag.V = ((beforeA ^ A) & (operand ^ A) & 0b10000000) != 0;
+				applyADC(operand);
+			} break;
+
+			case ADC_ABS_X: {
+				Word address = GetAddressAbsoluteX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applyADC(operand);
+			} break;
+
+			case ADC_ABS_Y: {
+				Word address = GetAddressAbsoluteY(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applyADC(operand);
+			} break;
+
+			case ADC_IND_X: {
+				Word address = GetAddressIndirectX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applyADC(operand);
+			} break;
+
+			case ADC_IND_Y: {
+				Word address = GetAddressIndirectY(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applyADC(operand);
 			} break;
 
 			/*
