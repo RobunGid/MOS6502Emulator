@@ -202,6 +202,16 @@ class mos6502::CPU {
 		ADC_IND_X = 0x61,
 		ADC_IND_Y = 0x71,
 
+		// CMP
+		CMP_IM = 0xC9,
+		CMP_ZP = 0xC5,
+		CMP_ZP_X = 0xD5,
+		CMP_ABS = 0xCD,
+		CMP_ABS_X = 0xDD,
+		CMP_ABS_Y = 0xD9,
+		CMP_IND_X = 0xC1,
+		CMP_IND_Y = 0xD1,
+
 		JSR = 0x20,
 		RTS = 0x60
 		;

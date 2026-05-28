@@ -737,6 +737,14 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				applyADC(operand);
 			} break;
 
+			case CMP_IM: {
+				Byte operand = FetchByte(Cycles, memory);
+				Byte tmp = A - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = A == operand;
+				Flag.C = A >= operand;
+			} break;
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 
