@@ -212,6 +212,16 @@ class mos6502::CPU {
 		CMP_IND_X = 0xC1,
 		CMP_IND_Y = 0xD1,
 
+		// CPX 
+		CPX_IM = 0xE0,
+		CPX_ZP = 0xE4,
+		CPX_ABS = 0xEC,
+
+		// CPX 
+		CPY_IM = 0xC0,
+		CPY_ZP = 0xC4,
+		CPY_ABS = 0xCC,
+
 		JSR = 0x20,
 		RTS = 0x60
 		;
@@ -322,7 +332,7 @@ class mos6502::CPU {
 	Word LoadProgram(const Byte* program, u32 numberOfBytes, Memory& memory);
 
 	// Print values of registers, program counter, stack pointer, flags
-	void PrintStatus() const;
+	void PrintStatus(Memory memory) const;
 
 	// Address Mode: Zero Page
 	Word GetAddressZeroPage(s32& Cycles, const Memory& memory);

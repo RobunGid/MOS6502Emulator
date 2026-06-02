@@ -808,6 +808,59 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Flag.C = A >= operand;
 			} break;
 
+			case CPX_IM: {
+				Byte operand = FetchByte(Cycles, memory);
+				Byte tmp = X - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = X == operand;
+				Flag.C = X >= operand;
+			} break;
+
+			case CPX_ZP: {
+				Byte address = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				Byte tmp = X - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = X == operand;
+				Flag.C = X >= operand;
+			} break;
+
+			case CPX_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				Byte tmp = X - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = X == operand;
+				Flag.C = X >= operand;
+			} break;
+
+			case CPY_IM: {
+				Byte operand = FetchByte(Cycles, memory);
+				Byte tmp = Y - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = Y == operand;
+				Flag.C = Y >= operand;
+			} break;
+
+			case CPY_ZP: {
+				Byte address = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				Byte tmp = Y - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = Y == operand;
+				Flag.C = Y >= operand;
+			} break;
+
+			case CPY_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				Byte tmp = Y - operand;
+				Flag.N = (tmp & 0b10000000) > 0;
+				Flag.Z = Y == operand;
+				Flag.C = Y >= operand;
+			} break;
+
+
 			/*
 			An original 6502 has does not correctly fetch 
 			the target address if the indirect vector falls 
@@ -852,8 +905,9 @@ mos6502::Word mos6502::CPU::LoadProgram(const Byte* program, u32 numberOfBytes, 
 	return loadAddress;
 }
 
-void mos6502::CPU::PrintStatus() const {
+void mos6502::CPU::PrintStatus(Memory memory) const {
 	printf("A = 0x%X, X = 0x%X, Y = 0x%X\n", A, X, Y); 
-	printf("PC = 0x%X, SP = 0x%X\n", PC, SP); 
-	printf("PS = %d\n", PS);;
+	printf("PC = 0x%X, INS = 0x%X, SP = 0x%X\n", PC, memory[PC], SP); 
+	printf("PS = %d\n", PS);
+	
 }

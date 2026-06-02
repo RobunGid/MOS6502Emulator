@@ -62,3 +62,39 @@ TEST_F(MOS6502ProgramTests, TestLoadAndExecuteProgram) {
 		clock -= cpu.Execute(20, memory);
 	}
 };
+
+TEST_F(MOS6502ProgramTests, TestCalculate10FibbonachiNumber) {
+	using namespace mos6502;
+
+	// when
+	// (three times for loop)
+	/*
+	* = $1000
+	lda #0
+	clc
+	loop
+		adc #8
+		cmp #24
+		bne loop
+
+	ldx #20
+	*/
+	static mos6502::Byte prg[] = {
+		0x00, 0x10, 0xa9, 0x00, 0x18, 0x69, 0x08, 0xc9, 
+		0x18, 0xd0, 0xfa, 0xa2, 0x14, 
+	};
+
+	Word startAddress = cpu.LoadProgram(prg, 13, memory);
+	cpu.PC = startAddress;
+
+	// then
+	try {
+		for (mos6502::s32 clock = 10000; clock > 0;) {
+			clock -= cpu.Execute(1, memory);
+		}
+	} catch (...) {
+		
+	};
+	cpu.PrintStatus(memory);
+	printf("2893482934892384");
+};

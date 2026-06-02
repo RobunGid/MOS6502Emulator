@@ -8,8 +8,12 @@ static void VerifyUnmodifiedFlagFromComparing(const mos6502::CPU& cpu, const mos
 	EXPECT_EQ(cpu.Flag.V, cpu_copy.Flag.V);
 }
 
-struct CMPTestData {
-	mos6502::Byte A_value;
+enum class CompareRegister {
+	A, X, Y
+};
+
+struct CompareInstructionTestData {
+	mos6502::Byte value;
 	mos6502::Byte operand;
 
 	bool expect_C;
@@ -28,15 +32,29 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 		};
 
-		void CMPTestImmediate(CMPTestData data) {
+		void RegisterCompareTestImmediate(CompareInstructionTestData data, CompareRegister registerToTest) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
-			memory[0xFFFC] = CPU::CMP_IM;
+			Byte mos6502::CPU::*cpuRegisterToTest;
+			switch (registerToTest) {
+				case CompareRegister::A: {
+					cpuRegisterToTest = &mos6502::CPU::A;
+					memory[0xFFFC] = CPU::CMP_IM;
+				} break;
+				case CompareRegister::X: {
+					cpuRegisterToTest = &mos6502::CPU::X;
+					memory[0xFFFC] = CPU::CPX_IM;
+				} break;
+				case CompareRegister::Y: {
+					cpuRegisterToTest = &mos6502::CPU::Y;
+					memory[0xFFFC] = CPU::CPY_IM;
+				} break;
+			}
+			cpu.*cpuRegisterToTest = data.value;
 			memory[0xFFFD] = data.operand;
 			constexpr s32 EXPECTED_CYCLES = 2;
 			CPU cpu_copy = cpu;
@@ -46,22 +64,36 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.*cpuRegisterToTest, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestZeroPage(CMPTestData data) {
+		void RegisterCompareTestZeroPage(CompareInstructionTestData data, CompareRegister registerToTest) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
-			memory[0xFFFC] = CPU::CMP_ZP;
+			Byte mos6502::CPU::*cpuRegisterToTest;
+			switch (registerToTest) {
+				case CompareRegister::A: {
+					cpuRegisterToTest = &mos6502::CPU::A;
+					memory[0xFFFC] = CPU::CMP_ZP;
+				} break;
+				case CompareRegister::X: {
+					cpuRegisterToTest = &mos6502::CPU::X;
+					memory[0xFFFC] = CPU::CPX_ZP;
+				} break;
+				case CompareRegister::Y: {
+					cpuRegisterToTest = &mos6502::CPU::Y;
+					memory[0xFFFC] = CPU::CPY_ZP;
+				} break;
+			}
+			cpu.*cpuRegisterToTest = data.value;
 			memory[0xFFFD] = 0x74;
 			memory[0x74] = data.operand;
 			constexpr s32 EXPECTED_CYCLES = 3;
@@ -72,21 +104,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.*cpuRegisterToTest, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestZeroPageX(CMPTestData data) {
+		void CMPTestZeroPageX(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.X = 0x3F;
 			memory[0xFFFC] = CPU::CMP_ZP_X;
 			memory[0xFFFD] = 0x74;
@@ -99,22 +131,36 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestAbsolute(CMPTestData data) {
+		void RegiterCompareTestAbsolute(CompareInstructionTestData data, CompareRegister registerToTest) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
-			memory[0xFFFC] = CPU::CMP_ABS;
+			Byte mos6502::CPU::*cpuRegisterToTest;
+			switch (registerToTest) {
+				case CompareRegister::A: {
+					cpuRegisterToTest = &mos6502::CPU::A;
+					memory[0xFFFC] = CPU::CMP_ABS;
+				} break;
+				case CompareRegister::X: {
+					cpuRegisterToTest = &mos6502::CPU::X;
+					memory[0xFFFC] = CPU::CPX_ABS;
+				} break;
+				case CompareRegister::Y: {
+					cpuRegisterToTest = &mos6502::CPU::Y;
+					memory[0xFFFC] = CPU::CPY_ABS;
+				} break;
+			}
+			cpu.*cpuRegisterToTest = data.value;
 			memory[0xFFFD] = 0xBC;
 			memory[0xFFFE] = 0xA5;
 			memory[0xA5BC] = data.operand;
@@ -126,21 +172,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.*cpuRegisterToTest, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestAbsoluteX(CMPTestData data) {
+		void CMPTestAbsoluteX(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.X = 0x41;
 			memory[0xFFFC] = CPU::CMP_ABS_X;
 			memory[0xFFFD] = 0x9B;
@@ -154,21 +200,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestAbsoluteXWithPageCrossing(CMPTestData data) {
+		void CMPTestAbsoluteXWithPageCrossing(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.X = 0xB1;
 			memory[0xFFFC] = CPU::CMP_ABS_X;
 			memory[0xFFFD] = 0x9B;
@@ -182,21 +228,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestAbsoluteY(CMPTestData data) {
+		void CMPTestAbsoluteY(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.Y = 0x41;
 			memory[0xFFFC] = CPU::CMP_ABS_Y;
 			memory[0xFFFD] = 0x9B;
@@ -210,21 +256,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestAbsoluteYWithPageCrossing(CMPTestData data) {
+		void CMPTestAbsoluteYWithPageCrossing(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.Y = 0xB1;
 			memory[0xFFFC] = CPU::CMP_ABS_Y;
 			memory[0xFFFD] = 0x9B;
@@ -238,21 +284,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestIndirectX(CMPTestData data) {
+		void CMPTestIndirectX(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.X = 0x23;
 			memory[0xFFFC] = CPU::CMP_IND_X;
 			memory[0xFFFD] = 0x9B;
@@ -267,21 +313,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestIndirectY(CMPTestData data) {
+		void CMPTestIndirectY(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.Y = 0x23;
 			memory[0xFFFC] = CPU::CMP_IND_Y;
 			memory[0xFFFD] = 0x9B;
@@ -296,21 +342,21 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
 			VerifyUnmodifiedFlagFromComparing(cpu, cpu_copy);
 		};
 
-		void CMPTestIndirectYWithPageCrossing(CMPTestData data) {
+		void CMPTestIndirectYWithPageCrossing(CompareInstructionTestData data) {
 			using namespace mos6502;
 
 			// given
 			cpu.Flag.C = !data.expect_C;
 			cpu.Flag.Z = !data.expect_Z;
 			cpu.Flag.N = !data.expect_N;
-			cpu.A = data.A_value;
+			cpu.A = data.value;
 			cpu.Y = 0xA3;
 			memory[0xFFFC] = CPU::CMP_IND_Y;
 			memory[0xFFFD] = 0x9B;
@@ -325,7 +371,7 @@ class MOS6502CompareRegisterTests : public testing::Test {
 
 			// then
 			EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
-			EXPECT_EQ(cpu.A, data.A_value);
+			EXPECT_EQ(cpu.A, data.value);
 			EXPECT_EQ(cpu.Flag.C, data.expect_C);
 			EXPECT_EQ(cpu.Flag.Z, data.expect_Z);
 			EXPECT_EQ(cpu.Flag.N, data.expect_N);
@@ -333,32 +379,32 @@ class MOS6502CompareRegisterTests : public testing::Test {
 		};
 };
 
-CMPTestData testEqualData{
-	.A_value = 0x1A,
+CompareInstructionTestData testEqualData{
+	.value = 0x1A,
 	.operand = 0x1A,
 	.expect_C = true,
 	.expect_Z = true,
 	.expect_N = false,
 };
 
-CMPTestData testGreaterNoSign{
-	.A_value = 0x30,
+CompareInstructionTestData testGreaterNoSign{
+	.value = 0x30,
 	.operand = 0x1A,
 	.expect_C = true,
 	.expect_Z = false,
 	.expect_N = false,
 };
 
-CMPTestData testGreaterWithHighBit{
-	.A_value = 0x82,
+CompareInstructionTestData testGreaterWithHighBit{
+	.value = 0x82,
 	.operand = 0x1A,
 	.expect_C = true,
 	.expect_Z = false,
 	.expect_N = false,
 };
 
-CMPTestData testLessNegativeResult{
-	.A_value = 0x08,
+CompareInstructionTestData testLessNegativeResult{
+	.value = 0x08,
 	.operand = 0x1A,
 	.expect_C = false,
 	.expect_Z = false,
@@ -368,37 +414,37 @@ CMPTestData testLessNegativeResult{
 // CMP Immediate
 
 TEST_F(MOS6502CompareRegisterTests, CMPImmediateCanCompareTwoEqualValues) {
-	CMPTestImmediate(testEqualData);
+	RegisterCompareTestImmediate(testEqualData, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPImmediateCanCompareGreaterNoSign) {
-	CMPTestImmediate(testGreaterNoSign);
+	RegisterCompareTestImmediate(testGreaterNoSign, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPImmediateCanCompareGreaterWithHighBit) {
-	CMPTestImmediate(testGreaterWithHighBit);
+	RegisterCompareTestImmediate(testGreaterWithHighBit, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPImmediateCanCompareLessNegativeResult) {
-	CMPTestImmediate(testLessNegativeResult);
+	RegisterCompareTestImmediate(testLessNegativeResult, CompareRegister::A);
 }
 
 // CMP Zero Page
 
 TEST_F(MOS6502CompareRegisterTests, CMPZeroPageCanCompareTwoEqualValues) {
-	CMPTestZeroPage(testEqualData);
+	RegisterCompareTestZeroPage(testEqualData, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPZeroPageCanCompareGreaterNoSign) {
-	CMPTestZeroPage(testGreaterNoSign);
+	RegisterCompareTestZeroPage(testGreaterNoSign, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPZeroPageCanCompareGreaterWithHighBit) {
-	CMPTestZeroPage(testGreaterWithHighBit);
+	RegisterCompareTestZeroPage(testGreaterWithHighBit, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPZeroPageCanCompareLessNegativeResult) {
-	CMPTestZeroPage(testLessNegativeResult);
+	RegisterCompareTestZeroPage(testLessNegativeResult, CompareRegister::A);
 }
 
 // CMP Zero Page X
@@ -422,19 +468,19 @@ TEST_F(MOS6502CompareRegisterTests, CMPZeroPageXCanCompareLessNegativeResult) {
 // CMP Absolute
 
 TEST_F(MOS6502CompareRegisterTests, CMPAbsoluteCanCompareTwoEqualValues) {
-	CMPTestAbsolute(testEqualData);
+	RegiterCompareTestAbsolute(testEqualData, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPAbsoluteCanCompareGreaterNoSign) {
-	CMPTestAbsolute(testGreaterNoSign);
+	RegiterCompareTestAbsolute(testGreaterNoSign, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPAbsoluteCanCompareGreaterWithHighBit) {
-	CMPTestAbsolute(testGreaterWithHighBit);
+	RegiterCompareTestAbsolute(testGreaterWithHighBit, CompareRegister::A);
 }
 
 TEST_F(MOS6502CompareRegisterTests, CMPAbsoluteCanCompareLessNegativeResult) {
-	CMPTestAbsolute(testLessNegativeResult);
+	RegiterCompareTestAbsolute(testLessNegativeResult, CompareRegister::A);
 }
 
 // CMP Absolute X
@@ -555,4 +601,112 @@ TEST_F(MOS6502CompareRegisterTests, CMPIndirectYCanCompareGreaterWithHighBitWith
 
 TEST_F(MOS6502CompareRegisterTests, CMPIndirectYCanCompareLessNegativeResultWithPageCrossing) {
 	CMPTestIndirectYWithPageCrossing(testLessNegativeResult);
+}
+
+// CPX Immediate
+
+TEST_F(MOS6502CompareRegisterTests, CPXImmediateCanCompareTwoEqualValues) {
+	RegisterCompareTestImmediate(testEqualData, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXImmediateCanCompareGreaterNoSign) {
+	RegisterCompareTestImmediate(testGreaterNoSign, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXImmediateCanCompareGreaterWithHighBit) {
+	RegisterCompareTestImmediate(testGreaterWithHighBit, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXImmediateCanCompareLessNegativeResult) {
+	RegisterCompareTestImmediate(testLessNegativeResult, CompareRegister::X);
+}
+
+// CPX Zero Page
+
+TEST_F(MOS6502CompareRegisterTests, CPXZeroPageCanCompareTwoEqualValues) {
+	RegisterCompareTestZeroPage(testEqualData, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXZeroPageCanCompareGreaterNoSign) {
+	RegisterCompareTestZeroPage(testGreaterNoSign, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXZeroPageCanCompareGreaterWithHighBit) {
+	RegisterCompareTestZeroPage(testGreaterWithHighBit, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXZeroPageCanCompareLessNegativeResult) {
+	RegisterCompareTestZeroPage(testLessNegativeResult, CompareRegister::X);
+}
+
+// CPX Absolute
+
+TEST_F(MOS6502CompareRegisterTests, CPXAbsoluteCanCompareTwoEqualValues) {
+	RegiterCompareTestAbsolute(testEqualData, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXAbsoluteCanCompareGreaterNoSign) {
+	RegiterCompareTestAbsolute(testGreaterNoSign, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXAbsoluteCanCompareGreaterWithHighBit) {
+	RegiterCompareTestAbsolute(testGreaterWithHighBit, CompareRegister::X);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPXAbsoluteCanCompareLessNegativeResult) {
+	RegiterCompareTestAbsolute(testLessNegativeResult, CompareRegister::X);
+}
+
+// CPY Immediate
+
+TEST_F(MOS6502CompareRegisterTests, CPYImmediateCanCompareTwoEqualValues) {
+	RegisterCompareTestImmediate(testEqualData, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYImmediateCanCompareGreaterNoSign) {
+	RegisterCompareTestImmediate(testGreaterNoSign, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYImmediateCanCompareGreaterWithHighBit) {
+	RegisterCompareTestImmediate(testGreaterWithHighBit, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYImmediateCanCompareLessNegativeResult) {
+	RegisterCompareTestImmediate(testLessNegativeResult, CompareRegister::Y);
+}
+
+// CPY Zero Page
+
+TEST_F(MOS6502CompareRegisterTests, CPYZeroPageCanCompareTwoEqualValues) {
+	RegisterCompareTestZeroPage(testEqualData, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYZeroPageCanCompareGreaterNoSign) {
+	RegisterCompareTestZeroPage(testGreaterNoSign, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYZeroPageCanCompareGreaterWithHighBit) {
+	RegisterCompareTestZeroPage(testGreaterWithHighBit, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYZeroPageCanCompareLessNegativeResult) {
+	RegisterCompareTestZeroPage(testLessNegativeResult, CompareRegister::Y);
+}
+
+// CPY Absolute
+
+TEST_F(MOS6502CompareRegisterTests, CPYAbsoluteCanCompareTwoEqualValues) {
+	RegiterCompareTestAbsolute(testEqualData, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYAbsoluteCanCompareGreaterNoSign) {
+	RegiterCompareTestAbsolute(testGreaterNoSign, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYAbsoluteCanCompareGreaterWithHighBit) {
+	RegiterCompareTestAbsolute(testGreaterWithHighBit, CompareRegister::Y);
+}
+
+TEST_F(MOS6502CompareRegisterTests, CPYAbsoluteCanCompareLessNegativeResult) {
+	RegiterCompareTestAbsolute(testLessNegativeResult, CompareRegister::Y);
 }
