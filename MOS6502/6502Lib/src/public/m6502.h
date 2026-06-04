@@ -202,6 +202,16 @@ class mos6502::CPU {
 		ADC_IND_X = 0x61,
 		ADC_IND_Y = 0x71,
 
+		// SBC
+		SBC_IM = 0xE9,
+		SBC_ZP = 0xE5,
+		SBC_ZP_X = 0xF5,
+		SBC_ABS = 0xED,
+		SBC_ABS_X = 0xFD,
+		SBC_ABS_Y = 0xF9,
+		SBC_IND_X = 0xE1,
+		SBC_IND_Y = 0xF1,
+
 		// CMP
 		CMP_IM = 0xC9,
 		CMP_ZP = 0xC5,

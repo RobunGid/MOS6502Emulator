@@ -141,6 +141,11 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 		Flag.V = ((beforeA ^ A) & (operand ^ A) & 0b10000000) != 0;
 	};
 
+	// Apply ыгиекфсе with carry to A register with operand from given address
+	auto applySBC = [applyADC] (Byte operand) {
+		applyADC(~operand);
+	};
+
 	while (Cycles > 0) {
 		Byte instruction = FetchByte(Cycles, memory);
 		switch (instruction) {
@@ -858,6 +863,53 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Flag.N = (tmp & 0b10000000) > 0;
 				Flag.Z = Y == operand;
 				Flag.C = Y >= operand;
+			} break;
+
+			case SBC_IM: {
+				Byte operand = FetchByte(Cycles, memory);
+				applySBC(operand);
+			} break;
+
+			case SBC_ZP: {
+				Word address = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
+			} break;
+
+			case SBC_ZP_X: {
+				Word address = GetAddressZeroPageX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
+			} break;
+			
+			case SBC_ABS: {
+				Word address = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
+			} break;
+
+			case SBC_ABS_X: {
+				Word address = GetAddressAbsoluteX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
+			} break;
+
+			case SBC_ABS_Y: {
+				Word address = GetAddressAbsoluteY(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
+			} break;
+
+			case SBC_IND_X: {
+				Word address = GetAddressIndirectX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
+			} break;
+
+			case SBC_IND_Y: {
+				Word address = GetAddressIndirectY(Cycles, memory);
+				Byte operand = ReadByte(Cycles, address, memory);
+				applySBC(operand);
 			} break;
 
 
