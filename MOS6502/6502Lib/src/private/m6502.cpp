@@ -166,12 +166,25 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 
 	// Apply rotate left to given operand and set appropriate flags
 	auto applyROL = [&Cycles, this] (Byte &operand) {
-		Byte bit1 = Flag.C ? 0b00000001 : 0b00000000;
+		Byte bitZero = Flag.C ? ZeroBitMask : 0b00000000;
 		Flag.C = (operand & 0b10000000) > 0;
 		operand <<= 1;
-		operand |= bit1;
+		operand |= bitZero;
 		Flag.Z = operand == 0;
 		Flag.N = (operand & 0b10000000) > 0;
+		Cycles--;
+	};
+
+	// Apply rotate right to given operand and set appropriate flags
+	auto applyROR = [&Cycles, this] (Byte &operand) {
+		bool oldBitZero = (operand & ZeroBitMask) > 0;
+		operand >>= 1;
+		if (Flag.C) {
+			operand |= 0b10000000;
+		}
+		Flag.Z = operand == 0;
+		Flag.N = (operand & 0b10000000) > 0;
+		Flag.C = oldBitZero;
 		Cycles--;
 	};
 
@@ -1034,6 +1047,38 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Word operandAddress = GetAddressAbsoluteX(Cycles, memory);
 				Byte operand = ReadByte(Cycles, operandAddress, memory);
 				applyROL(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROR_ACC: {
+				applyROR(A);
+			} break;
+
+			case ROR_ZP: {
+				Word operandAddress = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROR_ZP_X: {
+				Word operandAddress = GetAddressZeroPageX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROR_ABS: {
+				Word operandAddress = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROR_ABS_X: {
+				Word operandAddress = GetAddressAbsoluteX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROR(operand);
 				WriteByte(operand, Cycles, operandAddress, memory);
 			} break;
 

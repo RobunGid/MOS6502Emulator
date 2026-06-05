@@ -57,6 +57,11 @@ class mos6502::CPU {
 		mos6502::StatusFlags Flag;
 	};
 	 
+	static const Byte
+		ZeroBitMask = 0b00000001,
+		NegativeBitMask = 0b10000000,
+		OverflowBitMask = 0b01000000;
+
 	static const Byte 
 		// LDA
 	    LDA_IM = 0xA9,
