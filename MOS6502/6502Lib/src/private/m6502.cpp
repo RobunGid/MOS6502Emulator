@@ -135,15 +135,24 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 		Byte beforeA = A;
 		A += operand;
 		A += Flag.C;
+		Flag.C = (beforeA + Flag.C + operand) > 0xFF;
 		Flag.Z = A == 0;
 		Flag.N = (A & 0b10000000) > 0;
-		Flag.C = (beforeA + Flag.C + operand) > 0xFF;
 		Flag.V = ((beforeA ^ A) & (operand ^ A) & 0b10000000) != 0;
 	};
 
-	// Apply ыгиекфсе with carry to A register with operand from given address
+	// Apply subtract with carry to A register with operand from given address
 	auto applySBC = [applyADC] (Byte operand) {
 		applyADC(~operand);
+	};
+
+	// Apply arithmetic shift right to given operand and set appropriate flags
+	auto applyASR = [&Cycles, this] (Byte &operand) {
+		Flag.C = (operand & 0b10000000) > 0;
+		operand <<= 1;
+		Flag.Z = operand == 0;
+		Flag.N = (operand & 0b10000000) > 0;
+		Cycles--;
 	};
 
 	while (Cycles > 0) {
@@ -910,6 +919,38 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Word address = GetAddressIndirectY(Cycles, memory);
 				Byte operand = ReadByte(Cycles, address, memory);
 				applySBC(operand);
+			} break;
+
+			case ASL_ACC: {
+				applyASR(A);
+			} break;
+
+			case ASL_ZP: {
+				Byte operandAddress = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyASR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ASL_ZP_X: {
+				Byte operandAddress = GetAddressZeroPageX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyASR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ASL_ABS: {
+				Word operandAddress = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyASR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ASL_ABS_X: {
+				Word operandAddress = GetAddressAbsoluteX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyASR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
 			} break;
 
 

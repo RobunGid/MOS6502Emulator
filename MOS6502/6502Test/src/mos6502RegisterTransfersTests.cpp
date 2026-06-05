@@ -64,62 +64,62 @@ void MOS6502RegisterTransfersTests::TestTransferRegister(
 	VerifyUnmodifiedFlagFromLoadRegister(cpu, cpu_copy);
 };
 
-TEST_F( MOS6502RegisterTransfersTests, TAXCanTransferARegisterToXRegisterPositiveValue) {
+TEST_F(MOS6502RegisterTransfersTests, TAXCanTransferARegisterToXRegisterPositiveValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TAX, &CPU::A, &CPU::X, 0x42);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TAXCanTransferARegisterToXRegisterZeroValue) {
+TEST_F(MOS6502RegisterTransfersTests, TAXCanTransferARegisterToXRegisterZeroValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TAX, &CPU::A, &CPU::X, 0x00);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TAXCanTransferARegisterToXRegisterNegativeValue) {
+TEST_F(MOS6502RegisterTransfersTests, TAXCanTransferARegisterToXRegisterNegativeValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TAX, &CPU::A, &CPU::X, 0x80);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TAYCanTransferARegisterToYRegisterPositiveValue) {
+TEST_F(MOS6502RegisterTransfersTests, TAYCanTransferARegisterToYRegisterPositiveValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TAY, &CPU::A, &CPU::Y, 0x42);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TAYCanTransferARegisterToYRegisterZeroValue) {
+TEST_F(MOS6502RegisterTransfersTests, TAYCanTransferARegisterToYRegisterZeroValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TAY, &CPU::A, &CPU::Y, 0x00);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TAYCanTransferARegisterToYRegisterNegativeValue) {
+TEST_F(MOS6502RegisterTransfersTests, TAYCanTransferARegisterToYRegisterNegativeValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TAY, &CPU::A, &CPU::Y, 0x80);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TXACanTransferXRegisterToARegisterPositiveValue) {
+TEST_F(MOS6502RegisterTransfersTests, TXACanTransferXRegisterToARegisterPositiveValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TXA, &CPU::X, &CPU::A, 0x42);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TXACanTransferXRegisterToARegisterZeroValue) {
+TEST_F(MOS6502RegisterTransfersTests, TXACanTransferXRegisterToARegisterZeroValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TXA, &CPU::X, &CPU::A, 0x00);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TXACanTransferXRegisterToARegisterNegativeValue) {
+TEST_F(MOS6502RegisterTransfersTests, TXACanTransferXRegisterToARegisterNegativeValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TXA, &CPU::X, &CPU::A, 0x80);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TYACanTransferYRegisterToARegisterPositiveValue) {
+TEST_F(MOS6502RegisterTransfersTests, TYACanTransferYRegisterToARegisterPositiveValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TYA, &CPU::Y, &CPU::A, 0x42);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TYACanTransferYRegisterToARegisterZeroValue) {
+TEST_F(MOS6502RegisterTransfersTests, TYACanTransferYRegisterToARegisterZeroValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TYA, &CPU::Y, &CPU::A, 0x00);
 }
 
-TEST_F( MOS6502RegisterTransfersTests, TYACanTransferYRegisterToARegisterNegativeValue) {
+TEST_F(MOS6502RegisterTransfersTests, TYACanTransferYRegisterToARegisterNegativeValue) {
 	using namespace mos6502;
 	TestTransferRegister(CPU::TYA, &CPU::Y, &CPU::A, 0x80);
 }

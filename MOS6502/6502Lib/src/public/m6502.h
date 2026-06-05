@@ -232,6 +232,13 @@ class mos6502::CPU {
 		CPY_ZP = 0xC4,
 		CPY_ABS = 0xCC,
 
+		// ASL
+		ASL_ACC = 0x0A,
+		ASL_ZP = 0x06,
+		ASL_ZP_X = 0x16,
+		ASL_ABS = 0x0E,
+		ASL_ABS_X = 0x1E,
+
 		JSR = 0x20,
 		RTS = 0x60
 		;
