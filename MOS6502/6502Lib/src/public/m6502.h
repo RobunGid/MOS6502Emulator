@@ -106,10 +106,6 @@ class mos6502::CPU {
 		STY_ZP_X = 0x94,
 		STY_ABS = 0x8c,
 
-		// JMP
-		JMP_ABS = 0x4C,
-		JMP_IND = 0x6C,
-
 		// Stack Operations
 		TSX = 0xBA,
 		TXS = 0x9A,
@@ -196,6 +192,8 @@ class mos6502::CPU {
 
 		// System Functions & Other
 		NOP = 0xEA,
+		BRK = 0x00,
+		RTI = 0x40,
 
 		// ADC
 		ADC_IM = 0x69,
@@ -265,6 +263,9 @@ class mos6502::CPU {
 		ROR_ABS = 0x6E,
 		ROR_ABS_X = 0x7E,
 
+		// JMP & JSR & RTS
+		JMP_ABS = 0x4C,
+		JMP_IND = 0x6C,
 		JSR = 0x20,
 		RTS = 0x60
 		;
@@ -328,10 +329,19 @@ class mos6502::CPU {
 		return 0x100 | SP;
 	}
 
-	// Push PC-1 onto the stack
-	void PushPCToStack(s32& Cycles, Memory& memory) {
-		WriteWord(PC - 1, Cycles, SPToAddress()-1, memory);
-		SP -= 2;
+	void PushWordOntoStack(s32& Cycles, Memory& memory, Word value) {
+		WriteByte(value >> 8, Cycles, SPToAddress(), memory);
+		SP--;
+		WriteByte(value & 0xFF, Cycles, SPToAddress(), memory);
+		SP--;
+	}
+
+	void PushPCOntoStack(s32& Cycles, Memory& memory) {
+		PushWordOntoStack(Cycles, memory, PC);
+	}
+
+	void PushDecrementedPCOntoStack(s32& Cycles, Memory& memory) {
+		PushWordOntoStack(Cycles, memory, PC-1);
 	}
 
 	void PushByteOntoStack(s32& Cycles, Byte value, Memory& memory) {
@@ -344,7 +354,7 @@ class mos6502::CPU {
 		SP++;
 		const Word SPWord = SPToAddress();
 		Byte value = memory[SPWord];
-		Cycles -= 3;
+		Cycles -= 2;
 		return value;
 	}
 

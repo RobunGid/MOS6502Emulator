@@ -352,7 +352,7 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 
 			case JSR: {
 				Word subAddress = FetchWord(Cycles, memory);
-				PushPCToStack(Cycles, memory);
+				PushDecrementedPCOntoStack(Cycles, memory);
 				PC = subAddress;
 				Cycles--;
 			} break;
@@ -381,10 +381,12 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				A = PopByteFromStack(Cycles, memory);
 				Flag.Z = A == 0;
 				Flag.N = (A & 0b10000000) > 0;
+				Cycles--;
 			} break;
 
 			case PLP: {
 				PS = PopByteFromStack(Cycles, memory);
+				Cycles--;
 			} break;
 
 			case RTS: {
@@ -1080,6 +1082,19 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 				Byte operand = ReadByte(Cycles, operandAddress, memory);
 				applyROR(operand);
 				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case BRK: {
+				PushPCOntoStack(Cycles, memory);
+				PushByteOntoStack(Cycles, PS, memory);
+				constexpr Word interruptVectorAddress = 0xFFFE;
+				PC = ReadWord(Cycles, interruptVectorAddress, memory);
+				Flag.B = true;
+			} break;
+
+			case RTI: {
+				PS = PopByteFromStack(Cycles, memory);
+				PC = PopWordFromStack(Cycles, memory);
 			} break;
 
 			/*
