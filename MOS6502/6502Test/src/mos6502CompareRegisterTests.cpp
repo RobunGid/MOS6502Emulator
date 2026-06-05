@@ -8,19 +8,6 @@ static void VerifyUnmodifiedFlagFromComparing(const mos6502::CPU& cpu, const mos
 	EXPECT_EQ(cpu.Flag.V, cpu_copy.Flag.V);
 }
 
-enum class CompareRegister {
-	A, X, Y
-};
-
-struct CompareInstructionTestData {
-	mos6502::Byte value;
-	mos6502::Byte operand;
-
-	bool expect_C;
-	bool expect_Z;
-	bool expect_N;
-};
-
 class MOS6502CompareRegisterTests : public testing::Test {
 	public:
 		mos6502::Memory memory;
@@ -30,6 +17,19 @@ class MOS6502CompareRegisterTests : public testing::Test {
 		};
 		virtual void TearDown() {
 
+		};
+
+		enum class CompareRegister {
+			A, X, Y
+		};
+
+		struct CompareInstructionTestData {
+			mos6502::Byte value;
+			mos6502::Byte operand;
+
+			bool expect_C;
+			bool expect_Z;
+			bool expect_N;
 		};
 
 		void RegisterCompareTestImmediate(CompareInstructionTestData data, CompareRegister registerToTest) {
@@ -379,7 +379,7 @@ class MOS6502CompareRegisterTests : public testing::Test {
 		};
 };
 
-CompareInstructionTestData testEqualData{
+MOS6502CompareRegisterTests::CompareInstructionTestData testEqualData{
 	.value = 0x1A,
 	.operand = 0x1A,
 	.expect_C = true,
@@ -387,7 +387,7 @@ CompareInstructionTestData testEqualData{
 	.expect_N = false,
 };
 
-CompareInstructionTestData testGreaterNoSign{
+MOS6502CompareRegisterTests::CompareInstructionTestData testGreaterNoSign{
 	.value = 0x30,
 	.operand = 0x1A,
 	.expect_C = true,
@@ -395,7 +395,7 @@ CompareInstructionTestData testGreaterNoSign{
 	.expect_N = false,
 };
 
-CompareInstructionTestData testGreaterWithHighBit{
+MOS6502CompareRegisterTests::CompareInstructionTestData testGreaterWithHighBit{
 	.value = 0x82,
 	.operand = 0x1A,
 	.expect_C = true,
@@ -403,7 +403,7 @@ CompareInstructionTestData testGreaterWithHighBit{
 	.expect_N = false,
 };
 
-CompareInstructionTestData testLessNegativeResult{
+MOS6502CompareRegisterTests::CompareInstructionTestData testLessNegativeResult{
 	.value = 0x08,
 	.operand = 0x1A,
 	.expect_C = false,

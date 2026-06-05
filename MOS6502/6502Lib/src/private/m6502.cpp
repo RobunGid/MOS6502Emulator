@@ -147,9 +147,29 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 	};
 
 	// Apply arithmetic shift right to given operand and set appropriate flags
-	auto applyASR = [&Cycles, this] (Byte &operand) {
+	auto applyASL = [&Cycles, this] (Byte &operand) {
 		Flag.C = (operand & 0b10000000) > 0;
 		operand <<= 1;
+		Flag.Z = operand == 0;
+		Flag.N = (operand & 0b10000000) > 0;
+		Cycles--;
+	};
+
+	// Apply arithmetic shift right to given operand and set appropriate flags
+	auto applyLSR = [&Cycles, this] (Byte &operand) {
+		Flag.C = (operand & 0b00000001) > 0;
+		operand >>= 1;
+		Flag.Z = operand == 0;
+		Flag.N = (operand & 0b10000000) > 0;
+		Cycles--;
+	};
+
+	// Apply rotate left to given operand and set appropriate flags
+	auto applyROL = [&Cycles, this] (Byte &operand) {
+		Byte bit1 = Flag.C ? 0b00000001 : 0b00000000;
+		Flag.C = (operand & 0b10000000) > 0;
+		operand <<= 1;
+		operand |= bit1;
 		Flag.Z = operand == 0;
 		Flag.N = (operand & 0b10000000) > 0;
 		Cycles--;
@@ -922,37 +942,100 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 			} break;
 
 			case ASL_ACC: {
-				applyASR(A);
+				applyASL(A);
 			} break;
 
 			case ASL_ZP: {
 				Byte operandAddress = GetAddressZeroPage(Cycles, memory);
 				Byte operand = ReadByte(Cycles, operandAddress, memory);
-				applyASR(operand);
+				applyASL(operand);
 				WriteByte(operand, Cycles, operandAddress, memory);
 			} break;
 
 			case ASL_ZP_X: {
 				Byte operandAddress = GetAddressZeroPageX(Cycles, memory);
 				Byte operand = ReadByte(Cycles, operandAddress, memory);
-				applyASR(operand);
+				applyASL(operand);
 				WriteByte(operand, Cycles, operandAddress, memory);
 			} break;
 
 			case ASL_ABS: {
 				Word operandAddress = GetAddressAbsolute(Cycles, memory);
 				Byte operand = ReadByte(Cycles, operandAddress, memory);
-				applyASR(operand);
+				applyASL(operand);
 				WriteByte(operand, Cycles, operandAddress, memory);
 			} break;
 
 			case ASL_ABS_X: {
 				Word operandAddress = GetAddressAbsoluteX(Cycles, memory);
 				Byte operand = ReadByte(Cycles, operandAddress, memory);
-				applyASR(operand);
+				applyASL(operand);
 				WriteByte(operand, Cycles, operandAddress, memory);
 			} break;
 
+			case LSR_ACC: {
+				applyLSR(A);
+			} break;
+
+			case LSR_ZP: {
+				Byte operandAddress = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyLSR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case LSR_ZP_X: {
+				Byte operandAddress = GetAddressZeroPageX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyLSR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case LSR_ABS: {
+				Word operandAddress = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyLSR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case LSR_ABS_X: {
+				Word operandAddress = GetAddressAbsoluteX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyLSR(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROL_ACC: {
+				applyROL(A);
+			} break;
+
+			case ROL_ZP: {
+				Word operandAddress = GetAddressZeroPage(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROL(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROL_ZP_X: {
+				Word operandAddress = GetAddressZeroPageX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROL(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROL_ABS: {
+				Word operandAddress = GetAddressAbsolute(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROL(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
+
+			case ROL_ABS_X: {
+				Word operandAddress = GetAddressAbsoluteX(Cycles, memory);
+				Byte operand = ReadByte(Cycles, operandAddress, memory);
+				applyROL(operand);
+				WriteByte(operand, Cycles, operandAddress, memory);
+			} break;
 
 			/*
 			An original 6502 has does not correctly fetch 

@@ -28,14 +28,14 @@ class MOS6502ShiftsTests : public testing::Test {
 			bool expect_N;
 		};
 
-        void TestASLAccumulator(ShiftTestData data) {
+        void TestShiftAccumulator(ShiftTestData data, mos6502::Byte instruction) {
             using namespace mos6502;
             
             // given
-            memory[0xFFFC] = CPU::ASL_ACC;
-            cpu.Flag.C = true;
-            cpu.Flag.Z = true;
-            cpu.Flag.N = true;
+            memory[0xFFFC] = instruction;
+            cpu.Flag.C = !data.expect_C;
+            cpu.Flag.Z = !data.expect_Z;
+            cpu.Flag.N = !data.expect_N;
             cpu.A = data.operand;
             CPU cpu_copy = cpu;
 
@@ -52,11 +52,11 @@ class MOS6502ShiftsTests : public testing::Test {
             VerifyUnmodifiedFlagFromShifts(cpu, cpu_copy);
 		};
 
-        void TestASLZeroPage(ShiftTestData data) {
+        void TestShiftZeroPage(ShiftTestData data, mos6502::Byte instruction) {
             using namespace mos6502;
             
             // given
-            memory[0xFFFC] = CPU::ASL_ZP;
+            memory[0xFFFC] = instruction;
             memory[0xFFFD] = 0x9B;
             memory[0x9B] = data.operand;
             cpu.Flag.C = !data.expect_C;
@@ -77,11 +77,11 @@ class MOS6502ShiftsTests : public testing::Test {
             VerifyUnmodifiedFlagFromShifts(cpu, cpu_copy);
 		};
 
-        void TestASLZeroPageX(ShiftTestData data) {
+        void TestShiftZeroPageX(ShiftTestData data, mos6502::Byte instruction) {
             using namespace mos6502;
             
             // given
-            memory[0xFFFC] = CPU::ASL_ZP_X;
+            memory[0xFFFC] = instruction;
             memory[0xFFFD] = 0x3B;
             cpu.X = 0xA1;
             memory[0xDC] = data.operand;
@@ -103,11 +103,11 @@ class MOS6502ShiftsTests : public testing::Test {
             VerifyUnmodifiedFlagFromShifts(cpu, cpu_copy);
 		};
 
-        void TestASLAbsolute(ShiftTestData data) {
+        void TestShiftAbsolute(ShiftTestData data, mos6502::Byte instruction) {
             using namespace mos6502;
             
             // given
-            memory[0xFFFC] = CPU::ASL_ABS;
+            memory[0xFFFC] = instruction;
             memory[0xFFFD] = 0x67;
             memory[0xFFFE] = 0x9B;
             memory[0x9B67] = data.operand;
@@ -129,11 +129,11 @@ class MOS6502ShiftsTests : public testing::Test {
             VerifyUnmodifiedFlagFromShifts(cpu, cpu_copy);
 		};
 
-        void TestASLAbsoluteX(ShiftTestData data) {
+        void TestShiftAbsoluteX(ShiftTestData data, mos6502::Byte instruction) {
             using namespace mos6502;
             
             // given
-            memory[0xFFFC] = CPU::ASL_ABS_X;
+            memory[0xFFFC] = instruction;
             memory[0xFFFD] = 0x98;
             memory[0xFFFE] = 0x3B;
             cpu.X = 0xA1;
@@ -181,63 +181,257 @@ MOS6502ShiftsTests::ShiftTestData testASLDataNegativeValue{
 	.expect_N = true,
 };
 
+MOS6502ShiftsTests::ShiftTestData testLSRDataValueOfOne{
+	.operand = 0x01,
+	.expect_result = 0x00,
+	.expect_C = true,
+	.expect_Z = true,
+	.expect_N = false,
+};
+
+MOS6502ShiftsTests::ShiftTestData testLSRDataPositiveValue{
+	.operand = 0x5F,
+	.expect_result = 0x2F,
+	.expect_C = true,
+	.expect_Z = false,
+	.expect_N = false,
+};
+
+MOS6502ShiftsTests::ShiftTestData testLSRDataNegativeValue{
+	.operand = 0xC2,
+	.expect_result = 0x61,
+	.expect_C = false,
+	.expect_Z = false,
+	.expect_N = false,
+};
+
+MOS6502ShiftsTests::ShiftTestData testROLDataValueOfOneFromCarry {
+	.operand = 0x00,
+	.expect_result = 0x01,
+	.expect_C = false,
+	.expect_Z = false,
+	.expect_N = false,
+};
+
+MOS6502ShiftsTests::ShiftTestData testROLDataValueOfOneIntoCarry {
+	.operand = 0x80,
+	.expect_result = 0x00,
+	.expect_C = true,
+	.expect_Z = true,
+	.expect_N = false,
+};
+
+MOS6502ShiftsTests::ShiftTestData testROLDataValueOfZero {
+	.operand = 0x00,
+	.expect_result = 0x01,
+	.expect_C = false,
+	.expect_Z = false,
+	.expect_N = false,
+};
+
+MOS6502ShiftsTests::ShiftTestData testROLDataValueToNegativeResult {
+	.operand = 0x73,
+	.expect_result = 0xE7,
+	.expect_C = false,
+	.expect_Z = false,
+	.expect_N = true,
+};
 
 TEST_F(MOS6502ShiftsTests, ASLAccumulatorCanShiftValueOfOne) {
-    TestASLAccumulator(testASLDataValueOfOne);
+    TestShiftAccumulator(testASLDataValueOfOne, mos6502::CPU::ASL_ACC);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAccumulatorCanShiftPositiveValue) {
-    TestASLAccumulator(testASLDataPositiveValue);
+    TestShiftAccumulator(testASLDataPositiveValue, mos6502::CPU::ASL_ACC);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAccumulatorCanShiftNegativeValue) {
-    TestASLAccumulator(testASLDataNegativeValue);
+    TestShiftAccumulator(testASLDataNegativeValue, mos6502::CPU::ASL_ACC);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLZeroPageCanShiftOne) {
-    TestASLZeroPage(testASLDataValueOfOne);
+    TestShiftZeroPage(testASLDataValueOfOne, mos6502::CPU::ASL_ZP);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLZeroPageCanShiftPositiveValue) {
-    TestASLZeroPage(testASLDataPositiveValue);
+    TestShiftZeroPage(testASLDataPositiveValue, mos6502::CPU::ASL_ZP);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLZeroPageCanShiftNegativeValue) {
-    TestASLZeroPage(testASLDataNegativeValue);
+    TestShiftZeroPage(testASLDataNegativeValue, mos6502::CPU::ASL_ZP);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLZeroPageXCanShiftOne) {
-    TestASLZeroPageX(testASLDataValueOfOne);
+    TestShiftZeroPageX(testASLDataValueOfOne, mos6502::CPU::ASL_ZP_X);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLZeroPageXCanShiftPositiveValue) {
-    TestASLZeroPageX(testASLDataPositiveValue);
+    TestShiftZeroPageX(testASLDataPositiveValue, mos6502::CPU::ASL_ZP_X);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLZeroPageXCanShiftNegativeValue) {
-    TestASLZeroPageX(testASLDataNegativeValue);
+    TestShiftZeroPageX(testASLDataNegativeValue, mos6502::CPU::ASL_ZP_X);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAbsoluteCanShiftOne) {
-    TestASLAbsolute(testASLDataValueOfOne);
+    TestShiftAbsolute(testASLDataValueOfOne, mos6502::CPU::ASL_ABS);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAbsoluteCanShiftPositiveValue) {
-    TestASLAbsolute(testASLDataPositiveValue);
+    TestShiftAbsolute(testASLDataPositiveValue, mos6502::CPU::ASL_ABS);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAbsoluteCanShiftNegativeValue) {
-    TestASLAbsolute(testASLDataNegativeValue);
+    TestShiftAbsolute(testASLDataNegativeValue, mos6502::CPU::ASL_ABS);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAbsoluteXCanShiftOne) {
-    TestASLAbsoluteX(testASLDataValueOfOne);
+    TestShiftAbsoluteX(testASLDataValueOfOne, mos6502::CPU::ASL_ABS_X);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAbsoluteXCanShiftPositiveValue) {
-    TestASLAbsoluteX(testASLDataPositiveValue);
+    TestShiftAbsoluteX(testASLDataPositiveValue, mos6502::CPU::ASL_ABS_X);
 }
 
 TEST_F(MOS6502ShiftsTests, ASLAbsoluteXCanShiftNegativeValue) {
-    TestASLAbsoluteX(testASLDataNegativeValue);
+    TestShiftAbsoluteX(testASLDataNegativeValue, mos6502::CPU::ASL_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRccumulatorCanShiftValueOfOne) {
+    TestShiftAccumulator(testLSRDataValueOfOne, mos6502::CPU::LSR_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAccumulatorCanShiftPositiveValue) {
+    TestShiftAccumulator(testLSRDataPositiveValue, mos6502::CPU::LSR_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAccumulatorCanShiftNegativeValue) {
+    TestShiftAccumulator(testLSRDataNegativeValue, mos6502::CPU::LSR_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRZeroPageCanShiftOne) {
+    TestShiftZeroPage(testLSRDataValueOfOne, mos6502::CPU::LSR_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRZeroPageCanShiftPositiveValue) {
+    TestShiftZeroPage(testLSRDataPositiveValue, mos6502::CPU::LSR_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRZeroPageCanShiftNegativeValue) {
+    TestShiftZeroPage(testLSRDataNegativeValue, mos6502::CPU::LSR_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRZeroPageXCanShiftOne) {
+    TestShiftZeroPageX(testLSRDataValueOfOne, mos6502::CPU::LSR_ZP_X);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRZeroPageXCanShiftPositiveValue) {
+    TestShiftZeroPageX(testLSRDataPositiveValue, mos6502::CPU::LSR_ZP_X);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRZeroPageXCanShiftNegativeValue) {
+    TestShiftZeroPageX(testLSRDataNegativeValue, mos6502::CPU::LSR_ZP_X);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAbsoluteCanShiftOne) {
+    TestShiftAbsolute(testLSRDataValueOfOne, mos6502::CPU::LSR_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAbsoluteCanShiftPositiveValue) {
+    TestShiftAbsolute(testLSRDataPositiveValue, mos6502::CPU::LSR_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAbsoluteCanShiftNegativeValue) {
+    TestShiftAbsolute(testLSRDataNegativeValue, mos6502::CPU::LSR_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAbsoluteXCanShiftOne) {
+    TestShiftAbsoluteX(testLSRDataValueOfOne, mos6502::CPU::LSR_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAbsoluteXCanShiftPositiveValue) {
+    TestShiftAbsoluteX(testLSRDataPositiveValue, mos6502::CPU::LSR_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, LSRAbsoluteXCanShiftNegativeValue) {
+    TestShiftAbsoluteX(testLSRDataNegativeValue, mos6502::CPU::LSR_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAccumulatorCanShiftValueOfOneFromCarry) {
+    TestShiftAccumulator(testROLDataValueOfOneFromCarry, mos6502::CPU::ROL_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAccumulatorCanShiftValueOfOneIntoCarry) {
+    TestShiftAccumulator(testROLDataValueOfOneIntoCarry, mos6502::CPU::ROL_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAccumulatorCanShiftValueOfZero) {
+    TestShiftAccumulator(testROLDataValueOfZero, mos6502::CPU::ROL_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAccumulatorCanShiftValueToNegativeResult) {
+    TestShiftAccumulator(testROLDataValueToNegativeResult, mos6502::CPU::ROL_ACC);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageCanShiftValueOfOneFromCarry) {
+    TestShiftZeroPage(testROLDataValueOfOneFromCarry, mos6502::CPU::ROL_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageCanShiftValueOfOneIntoCarry) {
+    TestShiftZeroPage(testROLDataValueOfOneIntoCarry, mos6502::CPU::ROL_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageCanShiftValueOfZero) {
+    TestShiftZeroPage(testROLDataValueOfZero, mos6502::CPU::ROL_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageCanShiftValueToNegativeResult) {
+    TestShiftZeroPage(testROLDataValueToNegativeResult, mos6502::CPU::ROL_ZP);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageXCanShiftValueOfOneFromCarry) {
+    TestShiftZeroPageX(testROLDataValueOfOneFromCarry, mos6502::CPU::ROL_ZP_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageXCanShiftValueOfOneIntoCarry) {
+    TestShiftZeroPageX(testROLDataValueOfOneIntoCarry, mos6502::CPU::ROL_ZP_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageXCanShiftValueOfZero) {
+    TestShiftZeroPageX(testROLDataValueOfZero, mos6502::CPU::ROL_ZP_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLZeroPageXCanShiftValueToNegativeResult) {
+    TestShiftZeroPageX(testROLDataValueToNegativeResult, mos6502::CPU::ROL_ZP_X);
+}
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteCanShiftValueOfOneFromCarry) {
+    TestShiftAbsolute(testROLDataValueOfOneFromCarry, mos6502::CPU::ROL_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteCanShiftValueOfOneIntoCarry) {
+    TestShiftAbsolute(testROLDataValueOfOneIntoCarry, mos6502::CPU::ROL_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteCanShiftValueOfZero) {
+    TestShiftAbsolute(testROLDataValueOfZero, mos6502::CPU::ROL_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteCanShiftValueToNegativeResult) {
+    TestShiftAbsolute(testROLDataValueToNegativeResult, mos6502::CPU::ROL_ABS);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteXCanShiftValueOfOneFromCarry) {
+    TestShiftAbsoluteX(testROLDataValueOfOneFromCarry, mos6502::CPU::ROL_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteXCanShiftValueOfOneIntoCarry) {
+    TestShiftAbsoluteX(testROLDataValueOfOneIntoCarry, mos6502::CPU::ROL_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteXCanShiftValueOfZero) {
+    TestShiftAbsoluteX(testROLDataValueOfZero, mos6502::CPU::ROL_ABS_X);
+}
+
+TEST_F(MOS6502ShiftsTests, ROLAbsoluteXCanShiftValueToNegativeResult) {
+    TestShiftAbsoluteX(testROLDataValueToNegativeResult, mos6502::CPU::ROL_ABS_X);
 }
