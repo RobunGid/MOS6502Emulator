@@ -36,14 +36,14 @@ class mos6502::Memory {
 };
 
 struct mos6502::StatusFlags {
-		Byte C : 1; // Status flag - Carry Flag
-		Byte Z : 1; // Status flag - Zero Flag
-		Byte I : 1; // Status flag - Interrupt Disable
-		Byte D : 1; // Status flag - Decimal Mode
-		Byte B : 1; // Status flag - Break Command
-		Byte Unused : 1; // Status flag - Break Command
-		Byte V : 1; // Status flag - Overflow Flag
-		Byte N : 1; // Status flag - Negative Flag
+		Byte C : 1;       // 0 Status flag - Carry Flag
+		Byte Z : 1;       // 1 Status flag - Zero Flag
+		Byte I : 1;       // 2 Status flag - Interrupt Disable
+		Byte D : 1;       // 3 Status flag - Decimal Mode
+		Byte B : 1;       // 4 Status flag - Break Command
+		Byte Unused : 1;  // 5 Status flag - Break Command
+		Byte V : 1;       // 6 Status flag - Overflow Flag
+		Byte N : 1;       // 7 tatus flag - Negative Flag
 };
 
 class mos6502::CPU {
@@ -58,9 +58,14 @@ class mos6502::CPU {
 	};
 	 
 	static const Byte
-		ZeroBitMask = 0b00000001,
-		NegativeBitMask = 0b10000000,
-		OverflowBitMask = 0b01000000;
+		CarryBitMask = 0b00000001,
+		ZeroBitMask = 0b00000010,
+		InterruptDisableBitMask = 0b00000100,
+		DecimalModeDisableBitMask = 0b00001000,
+		BreakCommandBitMask = 0b00010000,
+		UnusedBitMask = 0b000100000,
+		OverflowBitMask = 0b01000000,
+		NegativeBitMask = 0b10000000;
 
 	static const Byte 
 		// LDA
@@ -338,6 +343,25 @@ class mos6502::CPU {
 
 	void PushPCOntoStack(s32& Cycles, Memory& memory) {
 		PushWordOntoStack(Cycles, memory, PC);
+	}
+
+	void PushPSOntoStack(s32& Cycles, Memory& memory, bool setInterruptDisableFlagAfter) {
+		Byte PSToStack = PS;
+		PSToStack |= UnusedBitMask;
+		PSToStack |= BreakCommandBitMask;
+		PushByteOntoStack(Cycles, PSToStack, memory);
+		if (setInterruptDisableFlagAfter) {
+			Flag.I = true;
+		}
+	}
+
+	void PopPSFromStack(s32& Cycles, Memory& memory) {
+		Byte PSFromStack = PopByteFromStack(Cycles, memory);
+		PSFromStack &= ~BreakCommandBitMask;
+		PSFromStack &= ~UnusedBitMask;
+		PS &= UnusedBitMask;
+		PS &= BreakCommandBitMask;
+		PS |= PSFromStack;
 	}
 
 	void PushDecrementedPCOntoStack(s32& Cycles, Memory& memory) {

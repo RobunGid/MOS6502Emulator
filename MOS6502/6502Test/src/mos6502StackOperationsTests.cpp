@@ -109,15 +109,15 @@ TEST_F(MOS6502StackOperationsTests, PHACanPushARegisterOntoStack) {
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ(memory[cpu.SPToAddress()+1], 0x42);
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+	EXPECT_EQ(memory[cpu.SPToAddress()+1], 0x42);
 }
 
 TEST_F(MOS6502StackOperationsTests, PHPCanPushProcessorStatusRegisterOntoStack) {
 	using namespace mos6502;
 	// given
 	cpu.Reset(0xFF00, memory);
-	cpu.PS = 0xC;
+	cpu.PS = 0xCC;
 	memory[0xFF00] = CPU::PHP;
 	CPU cpu_copy = cpu;
 	constexpr s32 EXPECTED_CYCLES = 3;
@@ -127,9 +127,32 @@ TEST_F(MOS6502StackOperationsTests, PHPCanPushProcessorStatusRegisterOntoStack) 
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ(memory[cpu.SPToAddress()+1], 0xC);
 	EXPECT_EQ(cpu.PS, cpu_copy.PS);
+	const Byte flagsOnStack = 0xCC | CPU::UnusedBitMask | CPU::BreakCommandBitMask;
+	EXPECT_EQ(memory[cpu.SPToAddress()+1], flagsOnStack);
 	EXPECT_EQ(cpu.SP, 0xFE);
+}
+
+TEST_F(MOS6502StackOperationsTests, PHPALwaysSetsBits4And5OnTheStack) {
+	using namespace mos6502;
+	// given
+	cpu.Reset(0xFF00, memory);
+	cpu.PS = 0x00;
+	memory[0xFF00] = CPU::PHP;
+	constexpr s32 EXPECTED_CYCLES = 3;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	Word addressPSOnStack = cpu.SPToAddress() + 1;
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	/*
+	https://web.archive.org/web/20241124184248/https://www.nesdev.org/wiki/Status_flags
+
+	*/
+	const Byte flagsOnStack = CPU::UnusedBitMask | CPU::BreakCommandBitMask;
+	EXPECT_EQ(memory[addressPSOnStack], flagsOnStack);
 }
 
 TEST_F(MOS6502StackOperationsTests, PLACanPullValueFromStackIntoARegister) {
@@ -204,7 +227,7 @@ TEST_F(MOS6502StackOperationsTests, PLPCanPullValueFromStackIntoProcessorStatusR
 	cpu.PS = 0x00;
 	cpu.SP = 0xFE;
 	memory[0xFF00] = CPU::PLP;
-	memory[0x01FF] = 0x67;
+	memory[0x01FF] = 0x67 | CPU::BreakCommandBitMask | CPU::UnusedBitMask;
 	constexpr s32 EXPECTED_CYCLES = 4;
 
 	// when
@@ -212,5 +235,23 @@ TEST_F(MOS6502StackOperationsTests, PLPCanPullValueFromStackIntoProcessorStatusR
 
 	// then
 	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
-	EXPECT_EQ(cpu.PS, 0x67);
+	EXPECT_EQ(cpu.PS, 0x67 & ~CPU::BreakCommandBitMask & ~CPU::UnusedBitMask);
+}
+
+TEST_F(MOS6502StackOperationsTests, PLPIgnoreUnusedAndBreakBits) {
+	using namespace mos6502;
+	// given
+	cpu.Reset(0xFF00, memory);
+	cpu.PS = CPU::BreakCommandBitMask | CPU::UnusedBitMask;
+	cpu.SP = 0xFE;
+	memory[0xFF00] = CPU::PLP;
+	memory[0x01FF] = CPU::BreakCommandBitMask | CPU::UnusedBitMask;
+	constexpr s32 EXPECTED_CYCLES = 4;
+
+	// when
+	u32 CyclesUsed = cpu.Execute(EXPECTED_CYCLES, memory);
+
+	// then
+	EXPECT_EQ(CyclesUsed, EXPECTED_CYCLES);
+	EXPECT_EQ(cpu.PS, 0x00);
 }

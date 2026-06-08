@@ -43,9 +43,7 @@ set  (MOS6502_SOURCES
 		"src/mos6502LoadRegisterTests.cpp"
 		"src/mos6502StoreRegisterTests.cpp"
 		"src/mos6502JumpsAndCallsTests.cpp"
-		"src/mos6502StackOperationsTests"
 		"src/mos6502LogicalOperationsTests"
-		"src/mos6502ProgramTests"
 		"src/mos6502RegisterTransfersTests"
 		"src/mos6502IncrementDecrementOperationsTests"
 		"src/mos6502BranchTests"
@@ -54,7 +52,9 @@ set  (MOS6502_SOURCES
 		"src/mos6502AddWithCarryTests"
 		"src/mos6502SubtractWithCarryTests"
 		"src/mos6502CompareRegisterTests"
-		"src/mos6502ShiftsTests")
+		"src/mos6502ShiftsTests"
+		"src/mos6502StackOperationsTests"
+		"src/mos6502ProgramTests")
 		
 source_group("src" FILES ${MOS6502_SOURCES})
 		

@@ -166,7 +166,7 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 
 	// Apply rotate left to given operand and set appropriate flags
 	auto applyROL = [&Cycles, this] (Byte &operand) {
-		Byte bitZero = Flag.C ? ZeroBitMask : 0b00000000;
+		Byte bitZero = Flag.C ? CarryBitMask : 0b00000000;
 		Flag.C = (operand & 0b10000000) > 0;
 		operand <<= 1;
 		operand |= bitZero;
@@ -177,7 +177,7 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 
 	// Apply rotate right to given operand and set appropriate flags
 	auto applyROR = [&Cycles, this] (Byte &operand) {
-		bool oldBitZero = (operand & ZeroBitMask) > 0;
+		bool oldBitZero = (operand & CarryBitMask) > 0;
 		operand >>= 1;
 		if (Flag.C) {
 			operand |= 0b10000000;
@@ -374,7 +374,7 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 			} break;
 
 			case PHP: {
-				PushByteOntoStack(Cycles, PS, memory);
+				PushPSOntoStack(Cycles, memory, false);
 			} break;
 
 			case PLA: {
@@ -385,7 +385,7 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 			} break;
 
 			case PLP: {
-				PS = PopByteFromStack(Cycles, memory);
+				PopPSFromStack(Cycles, memory);
 				Cycles--;
 			} break;
 
@@ -1086,14 +1086,14 @@ mos6502::s32 mos6502::CPU::Execute(s32 Cycles, Memory& memory) {
 
 			case BRK: {
 				PushPCOntoStack(Cycles, memory);
-				PushByteOntoStack(Cycles, PS, memory);
+				PushPSOntoStack(Cycles, memory, true);
 				constexpr Word interruptVectorAddress = 0xFFFE;
 				PC = ReadWord(Cycles, interruptVectorAddress, memory);
 				Flag.B = true;
 			} break;
 
 			case RTI: {
-				PS = PopByteFromStack(Cycles, memory);
+				PopPSFromStack(Cycles, memory);
 				PC = PopWordFromStack(Cycles, memory);
 			} break;
 

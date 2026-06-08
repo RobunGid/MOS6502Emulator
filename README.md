@@ -72,6 +72,10 @@ int main() {
 
 MIT License
 
+## Thanks
+
+- https://github.com/Klaus2m5/6502_65C02_functional_tests
+
 ## Contributing
 
 Contributions are welcome. Feel free to open issues or submit pull requests.

@@ -126,7 +126,8 @@ TEST_F(MOS6502SystemFunctionsTests, BRKCanPushPCAndPSOntoStack) {
 	EXPECT_EQ(cyclesUsed, EXPECTED_CYCLES);
 	EXPECT_EQ(memory[(0x100 | oldSP)-0], 0xFF);
 	EXPECT_EQ(memory[(0x100 | oldSP)-1], 0x01);
-	EXPECT_EQ(memory[(0x100 | oldSP)-2], cpu_copy.PS);
+	EXPECT_EQ(memory[(0x100 | oldSP)-2], cpu_copy.PS | CPU::UnusedBitMask | CPU::BreakCommandBitMask);
+	EXPECT_TRUE(cpu.Flag.I);
 }
 
 TEST_F(MOS6502SystemFunctionsTests, RTICanReturnFromInterrupt) {
